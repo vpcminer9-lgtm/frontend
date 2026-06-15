@@ -15,96 +15,103 @@
         </div>
         
         <section class="bg-[#131c2e]/40 border border-slate-800 p-6 rounded-2xl shadow-xl space-y-4">
-            <h3 class="text-base font-bold text-white">Criar Nova Máquina de Mineração</h3>
+            <h3 class="text-base font-bold text-white">Criar Nova Estação de Mineração</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <input type="text" id="title" placeholder="Nome do Equipamento" class="bg-[#0f1626] border border-slate-800 p-3 rounded-xl text-white text-sm focus:outline-none focus:border-blue-500">
-                <input type="number" id="price" placeholder="Preço do Custo (R$)" class="bg-[#0f1626] border border-slate-800 p-3 rounded-xl text-white text-sm focus:outline-none focus:border-blue-500">
-                <input type="number" id="yield" placeholder="Rendimento Diário (%)" class="bg-[#0f1626] border border-slate-800 p-3 rounded-xl text-white text-sm focus:outline-none focus:border-blue-500">
-                <input type="number" id="duration" placeholder="Duração Total (Dias)" class="bg-[#0f1626] border border-slate-800 p-3 rounded-xl text-white text-sm focus:outline-none focus:border-blue-500">
-                <input type="file" id="imageFile" class="bg-[#0f1626] border border-slate-800 p-2 rounded-xl text-slate-400 text-xs focus:outline-none">
-                <textarea id="description" placeholder="Especificações técnicas rápidas" class="bg-[#0f1626] border border-slate-800 p-3 rounded-xl text-white text-sm focus:outline-none md:col-span-3"></textarea>
+                <input type="text" id="pTitle" placeholder="Título da Estação" class="bg-[#0a0d14] border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 text-white">
+                <input type="number" id="pPrice" placeholder="Custo de Ativação (R$)" class="bg-[#0a0d14] border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 text-white">
+                <input type="number" id="pYield" placeholder="Rendimento Diário (%)" class="bg-[#0a0d14] border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 text-white">
+                <input type="number" id="pDuration" placeholder="Duração do Contrato (Dias)" class="bg-[#0a0d14] border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 text-white">
+                <input type="text" id="pImg" placeholder="URL da Imagem da Máquina" class="bg-[#0a0d14] border border-slate-800 rounded-xl p-3 text-sm col-span-1 md:col-span-2 focus:outline-none focus:border-blue-500 text-white">
             </div>
-            <button onclick="createProduct()" class="bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm px-6 py-3 rounded-xl transition">Lançar Estação no Catálogo</button>
+            <textarea id="pDesc" placeholder="Descrição técnica..." class="w-full bg-[#0a0d14] border border-slate-800 rounded-xl p-3 text-sm h-20 focus:outline-none focus:border-blue-500 text-white"></textarea>
+            <button onclick="createProduct()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-3 rounded-xl text-xs transition">Lançar Máquina no Catálogo</button>
         </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="bg-[#131c2e]/40 border border-slate-800 p-6 rounded-2xl lg:col-span-2 space-y-4">
+                <h3 class="text-base font-bold text-white">Utilizadores Registados</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-400">
+                        <thead class="bg-[#0a0d14] text-slate-300 uppercase font-mono text-[10px]">
+                            <tr class="border-b border-slate-800">
+                                <th class="p-3">E-mail</th>
+                                <th class="p-3">Saldo Recarga</th>
+                                <th class="p-3">Rendimentos</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTable"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="bg-[#131c2e]/40 border border-slate-800 p-6 rounded-2xl space-y-4">
+                <h3 class="text-base font-bold text-white">Saques Pendentes</h3>
+                <div id="withdrawalsList" class="space-y-3 text-xs"></div>
+            </div>
+        </div>
     </div>
 
     <script>
         const API = 'https://blackend-6b0w.onrender.com/api';
-        const token = localStorage.getItem('token');
-        const role = localStorage.getItem('role');
-
-        // Segurança extra client-side: bloqueia visualização se não for admin
-        if (!token || role !== 'admin') {
-            alert('Acesso estritamente restrito.');
-            localStorage.clear();
-            location.href = 'auth.html';
-        }
-
-        const getHeaders = () => ({
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        });
+        function getHeaders() { return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` }; }
 
         async function loadAdmin() {
-            // Requisições administrativas passarão automaticamente pelo middleware `requireAdmin` do backend
             try {
-                const resUsers = await fetch(`${API}/admin/users`, { headers: getHeaders() });
-                if (resUsers.status === 403) {
-                    alert('Sessão administrativa revogada.');
-                    location.href = 'auth.html';
-                    return;
+                const res = await fetch(`${API}/admin/dashboard`, { method: 'GET', headers: getHeaders() });
+                if(res.status === 401 || res.status === 403) { location.href='auth.html'; return; }
+                const data = await res.json();
+
+                const uTable = document.getElementById('usersTable');
+                uTable.innerHTML = "";
+                if(data.users) {
+                    data.users.forEach(u => {
+                        uTable.innerHTML += `<tr class="border-b border-slate-800/60 hover:bg-slate-900/20"><td class="p-3 text-white font-medium">${u.email}</td><td class="p-3 text-blue-400 font-semibold">R$ ${Number(u.wallet_balance).toFixed(2)}</td><td class="p-3 text-emerald-400 font-semibold">R$ ${Number(u.profit_balance).toFixed(2)}</td></tr>`;
+                    });
                 }
-                // Renderização das tabelas mantida como no seu escopo original...
-            } catch (err) {
-                console.error("Erro ao puxar dados administrativos.");
-            }
+
+                const wList = document.getElementById('withdrawalsList');
+                wList.innerHTML = "";
+                if(!data.withdrawals || data.withdrawals.length === 0) {
+                    wList.innerHTML = '<p class="text-slate-500 py-2">Nenhuma solicitação pendente.</p>';
+                } else {
+                    data.withdrawals.forEach(w => {
+                        wList.innerHTML += `<div class="bg-[#0a0d14] border border-slate-800 p-4 rounded-xl space-y-2"><div class="flex justify-between font-medium"><span class="text-slate-300">Valor: R$ ${Number(w.requested_amount).toFixed(2)}</span></div><p class="text-[11px] text-slate-400 font-mono bg-[#131c2e] p-1.5 rounded break-all">Chave: ${w.pix_key}</p><div class="flex space-x-2 pt-1"><button onclick="actionWithdraw('${w.id}','approve')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-1 rounded font-bold text-[10px]">Aprovar</button><button onclick="actionWithdraw('${w.id}','reject')" class="flex-1 bg-red-900/40 border border-red-900 text-red-400 py-1 rounded font-bold text-[10px]">Recusar</button></div></div>`;
+                    });
+                }
+            } catch(e) { console.error(e); }
         }
 
         async function createProduct() {
-            const title = document.getElementById('title').value;
-            const price = parseFloat(document.getElementById('price').value);
-            const daily_yield_percent = parseFloat(document.getElementById('yield').value);
-            const duration_days = parseInt(document.getElementById('duration').value);
-            const description = document.getElementById('description').value;
-            const fileInput = document.getElementById('imageFile');
+            const title = document.getElementById('pTitle').value;
+            const description = document.getElementById('pDesc').value;
+            const image_url = document.getElementById('pImg').value;
+            const price = parseFloat(document.getElementById('pPrice').value);
+            const daily_yield_percent = parseFloat(document.getElementById('pYield').value);
+            const duration_days = parseInt(document.getElementById('pDuration').value);
 
-            let image_url = "";
-            if (fileInput.files.length > 0) {
-                image_url = await new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => resolve(reader.result);
-                    reader.readAsDataURL(fileInput.files[0]);
-                });
-            }
+            if(!title || !price || !daily_yield_percent || !duration_days) return alert('Preencha os campos.');
 
-            const payload = { title, description, image_url, price, daily_yield_percent, duration_days };
-
-            await fetch(`${API}/admin/products`, { 
+            const res = await fetch(`${API}/admin/products`, { 
                 method: 'POST', 
                 headers: getHeaders(), 
-                body: JSON.stringify(payload) 
+                body: JSON.stringify({ title, description, image_url, price, daily_yield_percent, duration_days }) 
             });
-            
-            alert('Nova estação lançada com sucesso!');
-            location.reload();
+            const data = await res.json();
+            if(data.success) { 
+                alert('Máquina adicionada!'); 
+                document.getElementById('pTitle').value = '';
+                document.getElementById('pDesc').value = '';
+                document.getElementById('pPrice').value = '';
+                document.getElementById('pYield').value = '';
+                document.getElementById('pDuration').value = '';
+                document.getElementById('pImg').value = '';
+                loadAdmin(); 
+            } else { 
+                alert(data.error || 'Erro ao cadastrar.'); 
+            }
         }
 
         async function actionWithdraw(withdrawalId, action) {
-            const res = await fetch(`${API}/admin/withdrawals/action`, { 
-                method: 'POST', 
-                headers: getHeaders(), 
-                body: JSON.stringify({ withdrawalId, action }) 
-            });
-            const data = await res.json();
-            if(data.error) alert(data.error); else { alert('Ordem atualizada!'); loadAdmin(); }
-        }
-
-        async function toggleBlock(userId, isBlocked) {
-            await fetch(`${API}/admin/users/block`, { 
-                method: 'POST', 
-                headers: getHeaders(), 
-                body: JSON.stringify({ userId, isBlocked }) 
-            });
+            await fetch(`${API}/admin/withdrawals/action`, { method: 'POST', headers: getHeaders(), body: JSON.stringify({ withdrawalId, action }) });
             loadAdmin();
         }
 
