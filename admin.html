@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>VPCMiner - Administração</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-[#0b0f19] text-slate-200 p-6 space-y-6 relative">
+    <div class="max-w-7xl mx-auto space-y-6">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+            <h2 class="text-xl font-bold text-white">Painel de Controle Operacional (Admin)</h2>
+            <button onclick="localStorage.clear(); location.href='auth.html';" class="bg-red-950/40 border border-red-900 text-red-400 text-xs px-3 py-1.5 rounded-lg hover:bg-red-900/50 transition">Voltar ao Login</button>
+        </div>
+        
+        <section class="bg-[#131c2e]/40 border border-slate-800 p-6 rounded-2xl shadow-xl space-y-4">
+            <h3 class="text-base font-bold text-white">Criar Nova Estação de Mineração</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <input type="text" id="pTitle" placeholder="Título da Estação" class="bg-[#0a0d14] border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 text-white">
+                <input type="number" id="pPrice" placeholder="Custo de Ativação (R$)" class="bg-[#0a0d14] border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 text-white">
+                <input type="number" id="pYield" placeholder="Rendimento Diário (%)" class="bg-[#0a0d14] border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 text-white">
+                <input type="number" id="pDuration" placeholder="Duração do Contrato (Dias)" class="bg-[#0a0d14] border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 text-white">
+                <input type="text" id="pImg" placeholder="URL da Imagem da Máquina" class="bg-[#0a0d14] border border-slate-800 rounded-xl p-3 text-sm col-span-1 md:col-span-2 focus:outline-none focus:border-blue-500 text-white">
+            </div>
+            <textarea id="pDesc" placeholder="Descrição técnica..." class="w-full bg-[#0a0d14] border border-slate-800 rounded-xl p-3 text-sm h-20 focus:outline-none focus:border-blue-500 text-white"></textarea>
+            <button onclick="createProduct()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-3 rounded-xl text-xs transition">Lançar Máquina no Catálogo</button>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="bg-[#131c2e]/40 border border-slate-800 p-6 rounded-2xl lg:col-span-2 space-y-4">
+                <h3 class="text-base font-bold text-white">Utilizadores Registados</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-400">
+                        <thead class="bg-[#0a0d14] text-slate-300 uppercase font-mono text-[10px]">
+                            <tr class="border-b border-slate-800">
+                                <th class="p-3">E-mail</th>
+                                <th class="p-3">Código/Indicado Por</th>
+                                <th class="p-3">Saldos (Rec./Rend.)</th>
+                                <th class="p-3">Comissão Dev</th>
+                                <th class="p-3 text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTable"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="bg-[#131c2e]/40 border border-slate-800 p-6 rounded-2xl space-y-4">
+                <h3 class="text-base font-bold text-white">Saques Pendentes</h3>
+                <div id="withdrawalsList" class="space-y-3 text-xs"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="referralsModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-[#131c2e] border border-slate-800 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-users text-blue-500"></i> Convidados de: <span id="modalUserCode" class="text-amber-400">---</span>
+                </h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white transition text-sm font-bold">✕</button>
+            </div>
+            <div class="overflow-y-auto max-h-60 rounded-xl border border-slate-800 bg-[#0a0d14]">
+                <table class="w-full text-left text-xs text-slate-400">
+                    <thead class="bg-[#131c2e] text-slate-300 text-[10px] uppercase font-mono border-b border-slate-800">
+                        <tr>
+                            <th class="p-3">Email Convidado</th>
+                            <th class="p-3">Total Depositado</th>
+                            <th class="p-3">Data Registo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalReferralsTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = 'https://blackend-6b0w.onrender.com/api';
+        function getHeaders() { return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` }; }
+
+        async function loadAdmin() {
+            try {
+                const res = await fetch(`${API}/admin/dashboard`, { method: 'GET', headers: getHeaders() });
+                if(res.status === 401 || res.status === 403) { location.href='auth.html'; return; }
+                const data = await res.json();
+
+                const uTable = document.getElementById('usersTable');
+                uTable.innerHTML = "";
+                if(data.users) {
+                    data.users.forEach(u => {
+                        const refInfo = u.referred_by ? `<span class="text-[10px] text-slate-500 block">Indicado por: ${u.referred_by}</span>` : '<span class="text-[10px] text-slate-600 block">Direto (Sem ref)</span>';
+                        
+                        uTable.innerHTML += `
+                            <tr class="border-b border-slate-800/60 hover:bg-slate-900/20">
+                                <td class="p-3 text-white font-medium">${u.email}</td>
+                                <td class="p-3 font-mono text-slate-300">
+                                    <span class="text-blue-400 font-bold">${u.affiliate_code || '---'}</span>
+                                    ${refInfo}
+                                </td>
+                                <td class="p-3">
+                                    <span class="text-blue-400 font-semibold block">R$ ${Number(u.wallet_balance).toFixed(2)}</span>
+                                    <span class="text-emerald-400 font-semibold block text-[11px]">R$ ${Number(u.profit_balance).toFixed(2)}</span>
+                                </td>
+                                <td class="p-3 text-amber-400 font-bold">R$ ${Number(u.total_referral_earnings || 0).toFixed(2)}</td>
+                                <td class="p-3 text-center">
+                                    <button onclick="viewReferrals('${u.affiliate_code}')" class="bg-slate-800 border border-slate-700 hover:border-blue-500/50 text-slate-300 hover:text-white px-2 py-1 rounded text-[11px] font-medium transition flex items-center gap-1 mx-auto">
+                                        <i class="fa-solid fa-eye text-[10px]"></i> Ver Convidados
+                                    </button>
+                                </td>
+                            </tr>`;
+                    });
+                }
+
+                const wList = document.getElementById('withdrawalsList');
+                wList.innerHTML = "";
+                if(!data.withdrawals || data.withdrawals.length === 0) {
+                    wList.innerHTML = '<p class="text-slate-500 py-2">Nenhuma solicitação pendente.</p>';
+                } else {
+                    data.withdrawals.forEach(w => {
+                        wList.innerHTML += `<div class="bg-[#0a0d14] border border-slate-800 p-4 rounded-xl space-y-2"><div class="flex justify-between font-medium"><span class="text-slate-300">Valor: R$ ${Number(w.requested_amount).toFixed(2)}</span></div><p class="text-[11px] text-slate-400 font-mono bg-[#131c2e] p-1.5 rounded break-all">Chave: ${w.pix_key}</p><div class="flex space-x-2 pt-1"><button onclick="actionWithdraw('${w.id}','approve')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-1 rounded font-bold text-[10px]">Aprovar</button><button onclick="actionWithdraw('${w.id}','reject')" class="flex-1 bg-red-900/40 border border-red-900 text-red-400 py-1 rounded font-bold text-[10px]">Recusar</button></div></div>`;
+                    });
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        async function viewReferrals(code) {
+            if(!code || code === 'undefined' || code === 'null') return alert('Este utilizador não possui código de afiliado válido.');
+            document.getElementById('modalUserCode').innerText = code;
+            
+            try {
+                const res = await fetch(`${API}/admin/referrals/${code}`, { method: 'GET', headers: getHeaders() });
+                const referrals = await res.json();
+                
+                const modalBody = document.getElementById('modalReferralsTable');
+                modalBody.innerHTML = "";
+                
+                if(!referrals || referrals.length === 0) {
+                    modalBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">Este utilizador ainda não convidou ninguém.</td></tr>`;
+                } else {
+                    referrals.forEach(ref => {
+                        const dateFormatted = new Date(ref.created_at).toLocaleDateString('pt-BR');
+                        modalBody.innerHTML += `
+                            <tr class="border-b border-slate-800/50 hover:bg-slate-900/40">
+                                <td class="p-3 text-slate-300 font-medium">${ref.email}</td>
+                                <td class="p-3 text-emerald-400 font-semibold">R$ ${Number(ref.total_deposited || 0).toFixed(2)}</td>
+                                <td class="p-3 text-slate-500 font-mono text-[11px]">${dateFormatted}</td>
+                            </tr>`;
+                    });
+                }
+                
+                document.getElementById('referralsModal').style.display = 'flex';
+            } catch (err) {
+                alert('Erro ao buscar lista de convidados.');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('referralsModal').style.display = 'none';
+        }
+
+        async function createProduct() {
+            const title = document.getElementById('pTitle').value;
+            const description = document.getElementById('pDesc').value;
+            const image_url = document.getElementById('pImg').value;
+            const price = parseFloat(document.getElementById('pPrice').value);
+            const daily_yield_percent = parseFloat(document.getElementById('pYield').value);
+            const duration_days = parseInt(document.getElementById('pDuration').value);
+
+            if(!title || !price || !daily_yield_percent || !duration_days) return alert('Preencha os campos.');
+
+            const res = await fetch(`${API}/admin/products`, { 
+                method: 'POST', 
+                headers: getHeaders(), 
+                body: JSON.stringify({ title, description, image_url, price, daily_yield_percent, duration_days }) 
+            });
+            const data = await res.json();
+            if(data.success) { 
+                alert('Máquina adicionada!'); 
+                document.getElementById('pTitle').value = '';
+                document.getElementById('pDesc').value = '';
+                document.getElementById('pPrice').value = '';
+                document.getElementById('pYield').value = '';
+                document.getElementById('pDuration').value = '';
+                document.getElementById('pImg').value = '';
+                loadAdmin(); 
+            } else { 
+                alert(data.error || 'Erro ao cadastrar.'); 
+            }
+        }
+
+        async function actionWithdraw(withdrawalId, action) {
+            await fetch(`${API}/admin/withdrawals/action`, { method: 'POST', headers: getHeaders(), body: JSON.stringify({ withdrawalId, action }) });
+            loadAdmin();
+        }
+
+        loadAdmin();
+    </script>
+</body>
+</html>
