@@ -128,7 +128,8 @@
                         products.forEach(p => {
                             container.innerHTML += `
                                 <div class="bg-[#0f1626] border border-slate-800 p-4 rounded-xl flex flex-col justify-between space-y-3">
-                                    ${p.image_url ? `<img src="${p.image_url}" class="w-full h-44 object-contain bg-[#0b0f19] rounded-lg border border-slate-800/60 p-1">` : ''}
+                                    
+${p.image_url ? `<img src="${p.image_url}" class="w-full h-auto max-h-64 object-cover bg-[#0b0f19] rounded-xl border border-slate-800/80 mb-2">` : ''}
                                     <div>
                                         <h5 class="text-white font-semibold text-sm">${p.title}</h5>
                                         <p class="text-xs text-slate-400 mt-1">${p.description || ''}</p>
