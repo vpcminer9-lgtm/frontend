@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VPCMiner - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-[#0b0f19] text-slate-200 min-h-screen">
+
+    <nav class="bg-[#131c2e]/60 backdrop-blur-md border-b border-slate-800/80 px-8 py-4 flex justify-between items-center sticky top-0 z-50">
+        <div class="text-xl font-extrabold tracking-wider text-white">VPC<span class="text-blue-500">Miner</span></div>
+        <button onclick="localStorage.clear(); location.href='auth.html';" class="bg-[#1e293b] hover:bg-red-950/40 border border-slate-800 text-slate-400 hover:text-red-400 text-xs px-4 py-2 rounded-xl transition duration-200">Sair da Conta</button>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-6 space-y-6">
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-[#131c2e]/40 border border-slate-800/80 p-6 rounded-2xl flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-slate-400 font-medium uppercase tracking-wider">Saldo de Recarga (PIX)</p>
+                    <h3 id="walletBalance" class="text-2xl font-black text-white mt-1">R$ 0,00</h3>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20"><i class="fa-solid fa-wallet text-blue-500 text-lg"></i></div>
+            </div>
+            <div class="bg-[#131c2e]/40 border border-slate-800/80 p-6 rounded-2xl flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-slate-400 font-medium uppercase tracking-wider">Saldo de Rendimentos</p>
+                    <h3 id="profitBalance" class="text-2xl font-black text-emerald-400 mt-1">R$ 0,00</h3>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20"><i class="fa-solid fa-chart-line text-emerald-500 text-lg"></i></div>
+            </div>
+            <div class="bg-[#131c2e]/40 border border-slate-800/80 p-6 rounded-2xl flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-slate-400 font-medium uppercase tracking-wider">Bónus de Convite</p>
+                    <h3 id="referralEarnings" class="text-2xl font-black text-amber-400 mt-1">R$ 0,00</h3>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20"><i class="fa-solid fa-users text-amber-500 text-lg"></i></div>
+            </div>
+        </div>
+
+        <div class="bg-[#131c2e]/40 border border-slate-800/80 p-6 rounded-2xl space-y-3">
+            <h4 class="font-bold text-white text-sm">Programa de Afiliados (Ganhe 12%)</h4>
+            <p class="text-xs text-slate-400">Partilhe o seu link exclusivo. Recebe instantaneamente 12% do valor de cada depósito efetuado pelos seus convidados!</p>
+            <div class="flex gap-2 max-w-2xl">
+                <input type="text" id="referralLink" readonly class="w-full bg-[#0a0d14] border border-slate-800 rounded-xl p-3 text-xs text-slate-300 focus:outline-none select-all" value="A carregar o seu link...">
+                <button onclick="copyLink()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-5 rounded-xl text-xs transition">Copiar</button>
+            </div>
+        </div>
+
+        <div class="bg-[#131c2e]/40 border border-slate-800/80 p-6 rounded-2xl space-y-4">
+            <h4 class="font-bold text-white text-sm">Estações de Mineração Disponíveis</h4>
+            <div id="productsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </div>
+
+        <div class="bg-[#131c2e]/40 border border-slate-800/80 p-6 rounded-2xl space-y-4">
+            <div class="flex items-center space-x-2 text-white font-bold text-sm">
+                <i class="fa-solid fa-microchip text-blue-500"></i>
+                <h4>Minhas Máquinas em Execução</h4>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-800 text-slate-400 font-medium">
+                            <th class="py-3 px-2">Data da Compra</th>
+                            <th class="py-3 px-2">Preço</th>
+                            <th class="py-3 px-2">Rendimento Diário</th>
+                            <th class="py-3 px-2">Dias Pagos</th>
+                            <th class="py-3 px-2">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="investmentsContainer" class="text-slate-300 divide-y divide-slate-800/60">
+                        <tr>
+                            <td colspan="5" class="text-center py-6 text-slate-500">A carregar os seus investimentos...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-[#131c2e]/40 border border-slate-800/80 p-6 rounded-2xl space-y-4">
+                <h4 class="font-bold text-white text-sm">Adicionar Saldo via PIX</h4>
+                <div class="space-y-2">
+                    <input type="number" id="depAmount" placeholder="Valor (mínimo R$ 10,00)" class="w-full bg-[#0a0d14] border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 text-white font-medium">
+                    <button onclick="deposit()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold p-3 rounded-xl text-sm transition">Gerar Código PIX</button>
+                </div>
+                <div id="pixContainer" class="hidden border border-slate-800 bg-[#0a0d14] p-4 rounded-xl text-center space-y-3">
+                    <p class="text-xs text-emerald-400 font-medium">Pix Gerado! Pague para ativar automaticamente.</p>
+                    <img id="qrcodeImg" class="mx-auto w-40 h-40 rounded-lg bg-white p-1">
+                    <div class="text-[11px] bg-[#131c2e] p-2 rounded border border-slate-800 text-left font-mono select-all overflow-x-auto text-slate-300 whitespace-nowrap" id="copiaCola"></div>
+                    <button onclick="navigator.clipboard.writeText(document.getElementById('copiaCola').innerText); alert('Copiado!');" class="text-xs text-blue-400 underline font-medium">Copiar Copia e Cola</button>
+                </div>
+            </div>
+
+            <div class="bg-[#131c2e]/40 border border-slate-800/80 p-6 rounded-2xl space-y-4">
+                <h4 class="font-bold text-white text-sm">Solicitar Retirada</h4>
+                <p class="text-xs text-slate-500">O saque será enviado para a chave PIX cadastrada no seu perfil: <span id="pixKeyDisplay" class="text-slate-300 font-medium">—</span></p>
+                <div class="space-y-2">
+                    <input type="number" id="witAmount" placeholder="Valor do saque" class="w-full bg-[#0a0d14] border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500 text-white">
+                    <button onclick="withdraw()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold p-3 rounded-xl text-sm transition">Solicitar Saque</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const API = 'https://blackend-6b0w.onrender.com/api';
+
+        function getHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            };
+        }
+
+        async function loadDashboard() {
+            try {
+                const res = await fetch(`${API}/user/profile`, { method: 'GET', headers: getHeaders() });
+                if (res.status === 401 || res.status === 403) {
+                    localStorage.clear();
+                    location.href = 'auth.html';
+                    return;
+                }
+                const data = await res.json();
+                if (data && !data.error) {
+                    document.getElementById('walletBalance').innerText = `R$ ${Number(data.wallet_balance).toFixed(2)}`;
+                    document.getElementById('profitBalance').innerText = `R$ ${Number(data.profit_balance).toFixed(2)}`;
+                    document.getElementById('referralEarnings').innerText = `R$ ${Number(data.total_referral_earnings || 0).toFixed(2)}`;
+                    
+                    if (data.pix_key) {
+                        document.getElementById('pixKeyDisplay').innerText = data.pix_key;
+                    }
+
+                    if (data.affiliate_code) {
+                        const baseUrl = window.location.origin;
+                        document.getElementById('referralLink').value = `${baseUrl}/auth.html?ref=${data.affiliate_code}`;
+                    }
+                }
+
+                // 🛒 Carrega Produtos Disponíveis
+                const resProducts = await fetch(`${API}/products`, { method: 'GET', headers: getHeaders() });
+                const products = await resProducts.json();
+
+                const container = document.getElementById('productsContainer');
+                if (container) {
+                    container.innerHTML = "";
+                    if (products && products.length > 0 && !products.error) {
+                        products.forEach(p => {
+                            container.innerHTML += `
+                                <div class="bg-[#0f1626] border border-slate-800 p-4 rounded-xl flex flex-col justify-between space-y-3">
+                                    ${p.image_url ? `<img src="${p.image_url}" class="w-full aspect-square object-cover bg-[#0b0f19] rounded-lg border border-slate-800/60">` : ''}
+                                    <div>
+                                        <h5 class="text-white font-semibold text-sm">${p.title}</h5>
+                                        <p class="text-xs text-slate-400 mt-1">${p.description || ''}</p>
+                                        <div class="text-xs text-slate-300 mt-2 space-y-1">
+                                            <div>💰 Custo: <span class="text-white font-medium">R$ ${Number(p.price).toFixed(2)}</span></div>
+                                            <div>📈 Retorno: <span class="text-emerald-400 font-medium">${p.daily_yield_percent}% ao dia</span></div>
+                                            <div>⏱️ Duração: <span class="text-blue-400 font-medium">${p.duration_days} dias</span></div>
+                                        </div>
+                                    </div>
+                                    <button onclick="buyProduct('${p.id}')" class="w-full bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-lg font-medium text-xs transition">
+                                        Ligar Mineração
+                                    </button>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        container.innerHTML = `<p class="text-xs text-slate-500 col-span-full text-center py-4">Nenhuma máquina ativa no catálogo.</p>`;
+                    }
+                }
+
+                // ⚙️ Carrega Histórico de Investimentos / Máquinas Compradas
+                const resInvestments = await fetch(`${API}/user/investments`, { method: 'GET', headers: getHeaders() });
+                const investments = await resInvestments.json();
+                
+                console.log("Dados recebidos da API /investments:", investments);
+                
+                const invContainer = document.getElementById('investmentsContainer');
+                if (invContainer) {
+                    invContainer.innerHTML = "";
+                    if (investments && investments.length > 0 && !investments.error) {
+                        investments.forEach(inv => {
+                            const date = inv.created_at ? new Date(inv.created_at).toLocaleDateString('pt-BR') : '—';
+                            const dailyReturn = inv.daily_yield_amount ? Number(inv.daily_yield_amount).toFixed(2) : '0.00';
+                            const purchasePrice = inv.purchase_price ? Number(inv.purchase_price).toFixed(2) : '0.00';
+                            
+                            const daysPaid = inv.days_paid || 0;
+                            const totalDays = inv.total_days || inv.duration_days || 0;
+
+                            const currentStatus = String(inv.status).toLowerCase();
+                            const statusBadge = (currentStatus === 'active' || currentStatus === 'minerando')
+                                ? `<span class="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 font-medium uppercase text-[10px]">Minerando</span>`
+                                : `<span class="text-slate-500 bg-slate-500/10 px-2 py-0.5 rounded border border-slate-800 font-medium uppercase text-[10px]">Finalizado</span>`;
+
+                            invContainer.innerHTML += `
+                                <tr class="border-b border-slate-800/50 hover:bg-[#131c2e]/20 transition">
+                                    <td class="py-3 px-2 text-slate-400">${date}</td>
+                                    <td class="py-3 px-2 text-white font-medium">R$ ${purchasePrice}</td>
+                                    <td class="py-3 px-2 text-emerald-400 font-medium">+R$ ${dailyReturn}/dia</td>
+                                    <td class="py-3 px-2 text-slate-300 font-semibold">${daysPaid} / ${totalDays} dias</td>
+                                    <td class="py-3 px-2">${statusBadge}</td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        invContainer.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-500">Ainda não comprou nenhuma máquina de mineração.</td></tr>`;
+                    }
+                }
+
+            } catch (err) {
+                console.error("Erro ao carregar painel:", err);
+            }
+        }
+
+        function copyLink() {
+            const linkInput = document.getElementById('referralLink');
+            linkInput.select();
+            navigator.clipboard.writeText(linkInput.value);
+            alert('Link de convite copiado com sucesso!');
+        }
+
+        async function buyProduct(productId) {
+            if (!confirm('Deseja ativar esta máquina com seu saldo de recarga?')) return;
+            try {
+                const res = await fetch(`${API}/products/buy`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({ productId })
+                });
+                const data = await res.json();
+                if (data.error) alert(data.error);
+                else { alert('Sucesso! Sua máquina já está minerando.'); loadDashboard(); }
+            } catch (err) {
+                alert('Erro ao ativar mineração.');
+            }
+        }
+
+        async function deposit() {
+            const amount = document.getElementById('depAmount').value;
+            if (!amount || amount < 10) return alert('Digite um valor válido (Mínimo R$ 10,00)');
+            try {
+                const res = await fetch(`${API}/payments/deposit`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({ amount: parseFloat(amount) })
+                });
+                const data = await res.json();
+                if (data.error) return alert(data.error);
+                if (data.success) {
+                    document.getElementById('pixContainer').classList.remove('hidden');
+                    document.getElementById('qrcodeImg').src = `data:image/png;base64,${data.qrCode}`;
+                    document.getElementById('copiaCola').innerText = data.copyPaste;
+                }
+            } catch (err) {
+                alert('Erro ao gerar código Pix.');
+            }
+        }
+
+        async function withdraw() {
+            const amount = document.getElementById('witAmount').value;
+            if (!amount || amount <= 0) return alert('Digite um valor válido para saque.');
+            try {
+                const res = await fetch(`${API}/withdraw/request`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({ amount: parseFloat(amount) })
+                });
+                const data = await res.json();
+                if (data.error) alert(data.error);
+                else { alert('Retirada solicitada com sucesso! Aguarde aprovação do admin.'); loadDashboard(); }
+            } catch (err) {
+                alert('Erro ao solicitar saque.');
+            }
+        }
+
+        loadDashboard();
+    </script>
+</body>
+</html>
