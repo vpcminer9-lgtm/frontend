@@ -142,7 +142,7 @@
                     }
                 }
 
-                // 🛒 Carrega Produtos Disponíveis (Imagem Grande Otimizada)
+                // 🛒 Carrega Produtos Disponíveis
                 const resProducts = await fetch(`${API}/products`, { method: 'GET', headers: getHeaders() });
                 const products = await resProducts.json();
 
@@ -174,6 +174,50 @@
                     }
                 }
 
+                // ⚙️ SEÇÃO CORRIGIDA: MAPEAMENTO DO BANCO DE DADOS EXATO
+                const resInvestments = await fetch(`${API}/user/investments`, { method: 'GET', headers: getHeaders() });
+                const investments = await resInvestments.json();
+                
+                const invContainer = document.getElementById('investmentsContainer');
+                if (invContainer) {
+                    invContainer.innerHTML = "";
+                    if (investments && investments.length > 0 && !investments.error) {
+                        investments.forEach(inv => {
+                            // Converte a data do banco corretamente
+                            const date = inv.created_at ? new Date(inv.created_at).toLocaleDateString('pt-BR') : '—';
+                            
+                            // Pega o valor exato que já vem calculado do banco de dados (daily_yield_amount)
+                            const dailyReturn = inv.daily_yield_amount ? Number(inv.daily_yield_amount).toFixed(2) : '0.00';
+                            const purchasePrice = inv.purchase_price ? Number(inv.purchase_price).toFixed(2) : '0.00';
+                            
+                            // Mapeia para total_days que é o nome correto da coluna no Supabase
+                            const daysPaid = inv.days_paid || 0;
+                            const totalDays = inv.total_days || 0;
+
+                            const currentStatus = String(inv.status).toLowerCase();
+                            const statusBadge = (currentStatus === 'active' || currentStatus === 'minerando')
+                                ? `<span class="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 font-medium uppercase text-[10px]">Minerando</span>`
+                                : `<span class="text-slate-500 bg-slate-500/10 px-2 py-0.5 rounded border border-slate-800 font-medium uppercase text-[10px]">Finalizado</span>`;
+
+                            invContainer.innerHTML += `
+                                <tr class="border-b border-slate-800/50 hover:bg-[#131c2e]/20 transition">
+                                    <td class="py-3 px-2 text-slate-400">${date}</td>
+                                    <td class="py-3 px-2 text-white font-medium">R$ ${purchasePrice}</td>
+                                    <td class="py-3 px-2 text-emerald-400 font-medium">+R$ ${dailyReturn}/dia</td>
+                                    <td class="py-3 px-2 text-slate-300 font-semibold">${daysPaid} / ${totalDays} dias</td>
+                                    <td class="py-3 px-2">${statusBadge}</td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        invContainer.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-500">Ainda não comprou nenhuma máquina de mineração.</td></tr>`;
+                    }
+                }
+
+            } catch (err) {
+                console.error("Erro ao carregar painel:", err);
+            }
+        }
                 // ⚙️ Carrega Histórico de Investimentos / Máquinas Compradas
                 const resInvestments = await fetch(`${API}/user/investments`, { method: 'GET', headers: getHeaders() });
                 const investments = await resInvestments.json();
