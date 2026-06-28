@@ -183,7 +183,15 @@
                     invContainer.innerHTML = "";
                     if (investments && investments.length > 0 && !investments.error) {
                         investments.forEach(inv => {
-                            const date = inv.created_at ? new Date(inv.created_at).toLocaleDateString('pt-BR') : '—';
+                        //    const date = inv.created_at ? new Date(inv.created_at).toLocaleDateString('pt-BR') : '—';
+                  let date = '—';
+if (inv.created_at) {
+    const d = new Date(inv.created_at);
+    const dia = String(d.getUTCDate()).padStart(2, '0');
+    const mes = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const ano = d.getUTCFullYear();
+    date = `${dia}/${mes}/${ano}`;
+}      
                             const dailyReturn = inv.daily_yield_amount ? Number(inv.daily_yield_amount).toFixed(2) : '0.00';
                             
                             // Se o preço for nulo ou zero (pois não existe no banco), exibe "Ativa"
