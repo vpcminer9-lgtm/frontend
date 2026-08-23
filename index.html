@@ -85,7 +85,7 @@
             <div class="bg-[#131c2e]/40 border border-slate-800/80 p-6 rounded-2xl space-y-4">
                 <h4 class="font-bold text-white text-sm">Adicionar Saldo via PIX</h4>
                 <div class="space-y-2">
-                    <input type="number" id="depAmount" placeholder="Valor (mínimo R$ 10,00)" class="w-full bg-[#0a0d14] border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 text-white font-medium">
+                    <input type="number" id="depAmount" placeholder="Valor (mínimo R$ 1,00)" class="w-full bg-[#0a0d14] border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 text-white font-medium">
                     <button onclick="deposit()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold p-3 rounded-xl text-sm transition">Gerar Código PIX</button>
                 </div>
                 <div id="pixContainer" class="hidden border border-slate-800 bg-[#0a0d14] p-4 rounded-xl text-center space-y-3">
@@ -256,7 +256,7 @@ if (inv.created_at) {
 
         async function deposit() {
             const amount = document.getElementById('depAmount').value;
-            if (!amount || amount < 10) return alert('Digite um valor válido (Mínimo R$ 10,00)');
+            if (!amount || amount < 1) return alert('Digite um valor válido (Mínimo R$ 1,00)');
             try {
                 const res = await fetch(`${API}/payments/deposit`, {
                     method: 'POST',
