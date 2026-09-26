@@ -1,0 +1,3198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>VPCMiner - Dashboard</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Fonte -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(37, 99, 235, 0.08),
+                    transparent 35%
+                ),
+                #080c14;
+            color: #e2e8f0;
+        }
+
+        /* Scrollbar */
+
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #080c14;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #263449;
+            border-radius: 20px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3b82f6;
+        }
+
+        /* Sidebar */
+
+        .sidebar {
+            width: 250px;
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(15, 23, 42, 0.98),
+                    rgba(9, 14, 25, 0.98)
+                );
+            border-right: 1px solid rgba(51, 65, 85, 0.65);
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-logo {
+            height: 82px;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.55);
+        }
+
+        .logo-main {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: white;
+        }
+
+        .logo-main span {
+            color: #3b82f6;
+        }
+
+        .logo-sub {
+            font-size: 9px;
+            color: #64748b;
+            letter-spacing: 1.5px;
+            margin-top: 2px;
+        }
+
+        .nav-area {
+            padding: 22px 13px;
+        }
+
+        .nav-title {
+            font-size: 9px;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 0 12px;
+            margin-bottom: 9px;
+        }
+
+        .nav-button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 13px;
+            border-radius: 11px;
+            border: 1px solid transparent;
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            margin-bottom: 4px;
+            cursor: pointer;
+            text-align: left;
+            background: transparent;
+        }
+
+        .nav-button i {
+            width: 19px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .nav-button:hover {
+            color: white;
+            background: rgba(30, 41, 59, 0.75);
+        }
+
+        .nav-button.active {
+            color: #60a5fa;
+            background: rgba(37, 99, 235, 0.12);
+            border-color: rgba(59, 130, 246, 0.20);
+            box-shadow: inset 3px 0 0 #3b82f6;
+        }
+
+        .sidebar-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 14px;
+            border-top: 1px solid rgba(51, 65, 85, 0.55);
+        }
+
+        .user-mini {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(51, 65, 85, 0.6);
+            border-radius: 12px;
+            padding: 11px;
+            margin-bottom: 10px;
+        }
+
+        .user-mini-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: rgba(37, 99, 235, 0.12);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #60a5fa;
+        }
+
+        /* Main */
+
+        .main-wrapper {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 72px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(8, 12, 20, 0.86);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(51, 65, 85, 0.55);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+        }
+
+        .mobile-menu-button {
+            display: none;
+        }
+
+        .content {
+            max-width: 1450px;
+            margin: auto;
+            padding: 30px;
+        }
+
+        /* Cards */
+
+        .panel {
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(19, 28, 46, 0.75),
+                    rgba(13, 19, 32, 0.72)
+                );
+            border: 1px solid rgba(51, 65, 85, 0.65);
+            border-radius: 17px;
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.14);
+        }
+
+        .panel-header {
+            padding: 20px 21px;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+        }
+
+        .panel-body {
+            padding: 21px;
+        }
+
+        .balance-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .balance-card::after {
+            content: "";
+            position: absolute;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            right: -60px;
+            top: -60px;
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .balance-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Section */
+
+        .page-section {
+            scroll-margin-top: 90px;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-heading-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Product */
+
+        .product-card {
+            background: rgba(9, 14, 25, 0.72);
+            border: 1px solid rgba(51, 65, 85, 0.62);
+            border-radius: 14px;
+            padding: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .product-card:hover {
+            border-color: rgba(59, 130, 246, 0.45);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+        }
+
+        /* Inputs */
+
+        .input-field {
+            width: 100%;
+            background: #080c14;
+            border: 1px solid #263449;
+            border-radius: 11px;
+            padding: 12px 13px;
+            color: white;
+            font-size: 13px;
+            outline: none;
+            transition: border 0.2s ease;
+        }
+
+        .input-field:focus {
+            border-color: #3b82f6;
+        }
+
+        /* Buttons */
+
+        .primary-button {
+            background: #2563eb;
+            color: white;
+            font-weight: 700;
+            border-radius: 11px;
+            padding: 12px 15px;
+            transition: 0.2s;
+        }
+
+        .primary-button:hover {
+            background: #3b82f6;
+        }
+
+        .success-button {
+            background: #059669;
+            color: white;
+            font-weight: 700;
+            border-radius: 11px;
+            padding: 12px 15px;
+            transition: 0.2s;
+        }
+
+        .success-button:hover {
+            background: #10b981;
+        }
+
+        /* Tables */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            min-width: 700px;
+        }
+
+        /* Mobile */
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                transform: translateX(-100%);
+                box-shadow: 20px 0 60px rgba(0, 0, 0, 0.4);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-wrapper {
+                margin-left: 0;
+            }
+
+            .mobile-menu-button {
+                display: flex;
+                width: 39px;
+                height: 39px;
+                align-items: center;
+                justify-content: center;
+                border-radius: 10px;
+                border: 1px solid #263449;
+                background: #111827;
+                color: #cbd5e1;
+            }
+
+            .content {
+                padding: 18px;
+            }
+
+            .topbar {
+                padding: 0 16px;
+            }
+        }
+
+        @media (max-width: 640px) {
+
+            .content {
+                padding: 13px;
+            }
+
+            .balance-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar-title {
+                display: none;
+            }
+
+            .panel-body,
+            .panel-header {
+                padding: 16px;
+            }
+
+            .referral-flex {
+                flex-direction: column;
+            }
+        }
+
+        /* Overlay mobile */
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 90;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        /* Loading */
+
+        .loading {
+            opacity: 0.55;
+            pointer-events: none;
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<aside id="sidebar" class="sidebar">
+
+    <div class="sidebar-logo">
+
+        <div>
+            <div class="logo-main">
+                VPC<span>Miner</span>
+            </div>
+
+            <div class="logo-sub">
+                MINING PLATFORM
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="nav-area">
+
+        <div class="nav-title">
+            Principal
+        </div>
+
+        <button class="nav-button active"
+                onclick="navigateTo('dashboard', this)">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Dashboard</span>
+        </button>
+
+
+        <button class="nav-button"
+                onclick="navigateTo('mining', this)">
+            <i class="fa-solid fa-microchip"></i>
+            <span>Mineração</span>
+        </button>
+
+
+        <div class="nav-title mt-7">
+            Financeiro
+        </div>
+
+
+        <button class="nav-button"
+                onclick="navigateTo('deposit', this)">
+            <i class="fa-solid fa-circle-plus"></i>
+            <span>Depositar</span>
+        </button>
+
+
+        <button class="nav-button"
+                onclick="navigateTo('withdraw', this)">
+            <i class="fa-solid fa-money-bill-transfer"></i>
+            <span>Solicitar Saque</span>
+        </button>
+
+
+        <button class="nav-button"
+                onclick="navigateTo('withdraw-history', this)">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>Histórico de Saques</span>
+        </button>
+
+
+        <div class="nav-title mt-7">
+            Programa
+        </div>
+
+
+        <button class="nav-button"
+                onclick="navigateTo('affiliate', this)">
+            <i class="fa-solid fa-users"></i>
+            <span>Afiliados</span>
+        </button>
+
+    </div>
+
+
+    <div class="sidebar-bottom">
+
+        <div class="user-mini">
+
+            <div class="flex items-center gap-3">
+
+                <div class="user-mini-icon">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+
+                <div class="min-w-0">
+                    <div class="text-[11px] font-bold text-white">
+                        Minha Conta
+                    </div>
+
+                    <div class="text-[9px] text-slate-500 truncate">
+                        Conta protegida
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <button onclick="logout()"
+                class="w-full flex items-center justify-center gap-2
+                       bg-slate-900 hover:bg-red-950/50
+                       border border-slate-800 hover:border-red-900/60
+                       text-slate-400 hover:text-red-400
+                       py-2.5 rounded-xl text-xs font-semibold transition">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            Sair da Conta
+
+        </button>
+
+    </div>
+
+</aside>
+
+
+<!-- OVERLAY MOBILE -->
+
+<div id="sidebarOverlay"
+     class="sidebar-overlay"
+     onclick="closeSidebar()">
+</div>
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<div class="main-wrapper">
+
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+        <div class="flex items-center gap-3">
+
+            <button class="mobile-menu-button"
+                    onclick="toggleSidebar()">
+
+                <i class="fa-solid fa-bars"></i>
+
+            </button>
+
+
+            <div>
+
+                <div class="topbar-title text-white font-bold text-sm">
+                    Painel de Controle
+                </div>
+
+                <div class="text-[10px] text-slate-500">
+                    Gerencie sua conta e mineração
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="flex items-center gap-3">
+
+            <div class="hidden sm:flex items-center gap-2
+                        bg-emerald-500/5
+                        border border-emerald-500/10
+                        rounded-full px-3 py-1.5">
+
+                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>
+
+                <span class="text-[10px] text-emerald-400 font-semibold">
+                    Sistema Online
+                </span>
+
+            </div>
+
+
+            <button onclick="logout()"
+                    class="lg:hidden text-slate-400 hover:text-red-400">
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTENT
+    ====================================================== -->
+
+    <main class="content">
+
+
+        <!-- DASHBOARD -->
+
+        <section id="dashboard"
+                 class="page-section">
+
+            <div class="mb-6">
+
+                <h1 class="text-2xl sm:text-3xl font-black text-white">
+                    Olá, bem-vindo 👋
+                </h1>
+
+                <p class="text-xs text-slate-500 mt-1">
+                    Acompanhe seus saldos, máquinas e movimentações.
+                </p>
+
+            </div>
+
+
+            <!-- SALDOS -->
+
+            <div class="balance-grid grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+
+
+                <!-- Wallet -->
+
+                <div class="panel balance-card p-5">
+
+                    <div class="flex justify-between items-center">
+
+                        <div>
+
+                            <p class="text-[10px] text-slate-500
+                                      font-bold uppercase tracking-wider">
+
+                                Saldo de Recarga
+
+                            </p>
+
+                            <h3 id="walletBalance"
+                                class="text-2xl font-black text-white mt-2">
+
+                                R$ 0,00
+
+                            </h3>
+
+                            <p class="text-[9px] text-slate-600 mt-1">
+                                Saldo disponível para ativação
+                            </p>
+
+                        </div>
+
+
+                        <div class="balance-icon
+                                    bg-blue-500/10
+                                    border border-blue-500/20">
+
+                            <i class="fa-solid fa-wallet text-blue-400"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Profit -->
+
+                <div class="panel balance-card p-5">
+
+                    <div class="flex justify-between items-center">
+
+                        <div>
+
+                            <p class="text-[10px] text-slate-500
+                                      font-bold uppercase tracking-wider">
+
+                                Saldo de Rendimentos
+
+                            </p>
+
+                            <h3 id="profitBalance"
+                                class="text-2xl font-black text-emerald-400 mt-2">
+
+                                R$ 0,00
+
+                            </h3>
+
+                            <p class="text-[9px] text-slate-600 mt-1">
+                                Rendimentos disponíveis
+                            </p>
+
+                        </div>
+
+
+                        <div class="balance-icon
+                                    bg-emerald-500/10
+                                    border border-emerald-500/20">
+
+                            <i class="fa-solid fa-chart-line text-emerald-400"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Referral -->
+
+                <div class="panel balance-card p-5">
+
+                    <div class="flex justify-between items-center">
+
+                        <div>
+
+                            <p class="text-[10px] text-slate-500
+                                      font-bold uppercase tracking-wider">
+
+                                Bônus de Convite
+
+                            </p>
+
+                            <h3 id="referralEarnings"
+                                class="text-2xl font-black text-amber-400 mt-2">
+
+                                R$ 0,00
+
+                            </h3>
+
+                            <p class="text-[9px] text-slate-600 mt-1">
+                                Comissões de afiliados
+                            </p>
+
+                        </div>
+
+
+                        <div class="balance-icon
+                                    bg-amber-500/10
+                                    border border-amber-500/20">
+
+                            <i class="fa-solid fa-users text-amber-400"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             MINERAÇÃO
+        ================================================== -->
+
+        <section id="mining"
+                 class="page-section mb-6">
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div class="section-heading">
+
+                        <div class="section-heading-icon
+                                    bg-blue-500/10
+                                    border border-blue-500/20">
+
+                            <i class="fa-solid fa-microchip text-blue-400"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h2 class="text-sm font-bold text-white">
+                                Mineração
+                            </h2>
+
+                            <p class="text-[10px] text-slate-500">
+                                Ative uma estação e acompanhe seus rendimentos.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel-body">
+
+                    <div id="productsContainer"
+                         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             MINHAS MÁQUINAS
+        ================================================== -->
+
+        <section id="machines"
+                 class="page-section mb-6">
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div class="section-heading">
+
+                        <div class="section-heading-icon
+                                    bg-purple-500/10
+                                    border border-purple-500/20">
+
+                            <i class="fa-solid fa-server text-purple-400"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h2 class="text-sm font-bold text-white">
+                                Minhas Máquinas
+                            </h2>
+
+                            <p class="text-[10px] text-slate-500">
+                                Máquinas atualmente em execução.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel-body">
+
+                    <div class="table-wrapper">
+
+                        <table class="w-full text-left text-xs border-collapse">
+
+                            <thead>
+
+                                <tr class="border-b border-slate-800 text-slate-500">
+
+                                    <th class="py-3 px-2 font-semibold">
+                                        Data
+                                    </th>
+
+                                    <th class="py-3 px-2 font-semibold">
+                                        Preço
+                                    </th>
+
+                                    <th class="py-3 px-2 font-semibold">
+                                        Rendimento Diário
+                                    </th>
+
+                                    <th class="py-3 px-2 font-semibold">
+                                        Dias Pagos
+                                    </th>
+
+                                    <th class="py-3 px-2 font-semibold">
+                                        Status
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="investmentsContainer"
+                                   class="text-slate-300 divide-y divide-slate-800/60">
+
+                                <tr>
+
+                                    <td colspan="5"
+                                        class="text-center py-8 text-slate-600">
+
+                                        <i class="fa-solid fa-spinner fa-spin mr-2"></i>
+
+                                        Carregando seus investimentos...
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             DEPÓSITO
+        ================================================== -->
+
+        <section id="deposit"
+                 class="page-section mb-6">
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div class="section-heading">
+
+                        <div class="section-heading-icon
+                                    bg-blue-500/10
+                                    border border-blue-500/20">
+
+                            <i class="fa-solid fa-circle-plus text-blue-400"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h2 class="text-sm font-bold text-white">
+                                Adicionar Saldo
+                            </h2>
+
+                            <p class="text-[10px] text-slate-500">
+                                Deposite através de PIX.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel-body">
+
+                    <div class="max-w-xl space-y-3">
+
+                        <label class="text-[10px] text-slate-500 uppercase font-bold">
+                            Valor da recarga
+                        </label>
+
+                        <input type="number"
+                               id="depAmount"
+                               placeholder="Digite o valor (mínimo R$ 5,00)"
+                               class="input-field">
+
+
+                        <button onclick="deposit()"
+                                class="primary-button w-full">
+
+                            <i class="fa-brands fa-pix mr-2"></i>
+
+                            Gerar Código PIX
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- PIX -->
+
+                    <div id="pixContainer"
+                         class="hidden mt-5
+                                border border-slate-800
+                                bg-[#080c14]
+                                p-5 rounded-xl
+                                max-w-xl">
+
+                        <div class="text-center space-y-4">
+
+                            <div>
+
+                                <div class="text-emerald-400 font-bold text-sm">
+                                    PIX gerado
+                                </div>
+
+                                <div class="text-[10px] text-slate-500 mt-1">
+                                    Efetue o pagamento para adicionar o saldo.
+                                </div>
+
+                            </div>
+
+
+                            <img id="qrcodeImg"
+                                 class="mx-auto w-44 h-44 rounded-xl bg-white p-2">
+
+
+                            <div>
+
+                                <div class="text-[9px] text-slate-500 uppercase font-bold mb-2">
+                                    PIX Copia e Cola
+                                </div>
+
+                                <div id="copiaCola"
+                                     class="text-[10px]
+                                            bg-[#111827]
+                                            p-3
+                                            rounded-lg
+                                            border border-slate-800
+                                            text-left
+                                            font-mono
+                                            select-all
+                                            overflow-x-auto
+                                            text-slate-300
+                                            whitespace-nowrap">
+                                </div>
+
+                            </div>
+
+
+                            <button onclick="copyPix()"
+                                    class="text-xs text-blue-400 hover:text-blue-300 font-semibold">
+
+                                <i class="fa-regular fa-copy mr-1"></i>
+
+                                Copiar código PIX
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SAQUE
+        ================================================== -->
+
+        <section id="withdraw"
+                 class="page-section mb-6">
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div class="section-heading">
+
+                        <div class="section-heading-icon
+                                    bg-emerald-500/10
+                                    border border-emerald-500/20">
+
+                            <i class="fa-solid fa-money-bill-transfer text-emerald-400"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h2 class="text-sm font-bold text-white">
+                                Solicitar Saque
+                            </h2>
+
+                            <p class="text-[10px] text-slate-500">
+                                Solicite a retirada dos seus rendimentos.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel-body">
+
+                    <div class="max-w-xl">
+
+                        <div class="bg-amber-500/5
+                                    border border-amber-500/10
+                                    rounded-xl p-4 mb-5">
+
+                            <div class="flex gap-3">
+
+                                <i class="fa-solid fa-circle-info
+                                          text-amber-400 mt-0.5"></i>
+
+                                <div>
+
+                                    <div class="text-xs font-bold text-amber-300">
+                                        Informações do saque
+                                    </div>
+
+                                    <div class="text-[10px] text-slate-500 mt-1">
+                                        O saque será enviado para a chave PIX
+                                        cadastrada na sua conta.
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="mb-4">
+
+                            <div class="text-[10px]
+                                        text-slate-500
+                                        uppercase
+                                        font-bold
+                                        mb-2">
+
+                                Chave PIX cadastrada
+
+                            </div>
+
+                            <div class="bg-[#080c14]
+                                        border border-slate-800
+                                        rounded-xl
+                                        px-4 py-3
+                                        text-xs
+                                        text-slate-300">
+
+                                <i class="fa-brands fa-pix text-blue-400 mr-2"></i>
+
+                                <span id="pixKeyDisplay">
+                                    —
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <label class="text-[10px]
+                                      text-slate-500
+                                      uppercase
+                                      font-bold">
+
+                            Valor do saque
+
+                        </label>
+
+
+                        <input type="number"
+                               id="witAmount"
+                               placeholder="Digite o valor do saque"
+                               class="input-field mt-2">
+
+
+                        <button onclick="withdraw()"
+                                class="success-button w-full mt-3">
+
+                            <i class="fa-solid fa-paper-plane mr-2"></i>
+
+                            Solicitar Saque
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             HISTÓRICO
+        ================================================== -->
+
+        <section id="withdraw-history"
+                 class="page-section mb-6">
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div class="flex items-center justify-between gap-4">
+
+                        <div class="section-heading">
+
+                            <div class="section-heading-icon
+                                        bg-emerald-500/10
+                                        border border-emerald-500/20">
+
+                                <i class="fa-solid fa-clock-rotate-left text-emerald-400"></i>
+
+                            </div>
+
+                            <div>
+
+                                <h2 class="text-sm font-bold text-white">
+                                    Histórico de Saques
+                                </h2>
+
+                                <p class="text-[10px] text-slate-500">
+                                    Consulte o status das suas solicitações.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <button onclick="loadWithdrawals()"
+                                class="text-[10px]
+                                       text-blue-400
+                                       hover:text-blue-300
+                                       font-semibold">
+
+                            <i class="fa-solid fa-rotate-right mr-1"></i>
+
+                            Atualizar
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel-body">
+
+                    <div class="table-wrapper">
+
+                        <table class="w-full text-left text-xs border-collapse">
+
+                            <thead>
+
+                                <tr class="border-b border-slate-800 text-slate-500">
+
+                                    <th class="py-3 px-2 font-semibold">
+                                        Data
+                                    </th>
+
+                                    <th class="py-3 px-2 font-semibold">
+                                        Valor
+                                    </th>
+
+                                    <th class="py-3 px-2 font-semibold">
+                                        Taxa
+                                    </th>
+
+                                    <th class="py-3 px-2 font-semibold">
+                                        Líquido
+                                    </th>
+
+                                    <th class="py-3 px-2 font-semibold">
+                                        PIX
+                                    </th>
+
+                                    <th class="py-3 px-2 font-semibold">
+                                        Status
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="withdrawalsContainer"
+                                   class="text-slate-300 divide-y divide-slate-800/60">
+
+                                <tr>
+
+                                    <td colspan="6"
+                                        class="text-center py-8 text-slate-600">
+
+                                        <i class="fa-solid fa-spinner fa-spin mr-2"></i>
+
+                                        Carregando histórico...
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             AFILIADOS
+        ================================================== -->
+
+        <section id="affiliate"
+                 class="page-section mb-8">
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div class="section-heading">
+
+                        <div class="section-heading-icon
+                                    bg-amber-500/10
+                                    border border-amber-500/20">
+
+                            <i class="fa-solid fa-users text-amber-400"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h2 class="text-sm font-bold text-white">
+                                Programa de Afiliados
+                            </h2>
+
+                            <p class="text-[10px] text-slate-500">
+                                Compartilhe seu link de convite.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel-body">
+
+                    <div class="bg-amber-500/5
+                                border border-amber-500/10
+                                rounded-xl p-4 mb-5">
+
+                        <div class="flex gap-3">
+
+                            <div class="w-9 h-9
+                                        rounded-lg
+                                        bg-amber-500/10
+                                        flex items-center
+                                        justify-center
+                                        shrink-0">
+
+                                <i class="fa-solid fa-gift text-amber-400"></i>
+
+                            </div>
+
+                            <div>
+
+                                <div class="text-sm font-bold text-white">
+                                    Ganhe 12%
+                                </div>
+
+                                <p class="text-[10px] text-slate-500 mt-1">
+                                    Compartilhe seu link exclusivo e receba
+                                    a comissão definida pelo programa sobre
+                                    os depósitos dos seus convidados.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="max-w-3xl">
+
+                        <label class="text-[10px]
+                                      text-slate-500
+                                      uppercase
+                                      font-bold">
+
+                            Seu link de convite
+
+                        </label>
+
+
+                        <div class="referral-flex flex gap-2 mt-2">
+
+                            <input type="text"
+                                   id="referralLink"
+                                   readonly
+                                   value="Carregando..."
+                                   class="input-field select-all">
+
+
+                            <button onclick="copyLink()"
+                                    class="primary-button whitespace-nowrap">
+
+                                <i class="fa-regular fa-copy mr-1"></i>
+
+                                Copiar
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- FOOTER -->
+
+        <div class="text-center py-5">
+
+            <div class="text-[9px] text-slate-700">
+                VPCMiner • Painel do Cliente
+            </div>
+
+        </div>
+
+
+    </main>
+
+</div>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script>
+
+    /*
+    ============================================================
+    CONFIGURAÇÃO DA API
+    ============================================================
+    */
+
+    const API =
+        'https://blackend-6b0w.onrender.com/api';
+
+
+    /*
+    ============================================================
+    HEADERS
+    ============================================================
+    */
+
+    function getHeaders() {
+
+        return {
+
+            'Content-Type':
+                'application/json',
+
+            'Authorization':
+                `Bearer ${localStorage.getItem('token')}`
+
+        };
+
+    }
+
+
+    /*
+    ============================================================
+    LOGOUT
+    ============================================================
+    */
+
+    function logout() {
+
+        localStorage.clear();
+
+        location.href =
+            'auth.html';
+
+    }
+
+
+    /*
+    ============================================================
+    SIDEBAR MOBILE
+    ============================================================
+    */
+
+    function toggleSidebar() {
+
+        const sidebar =
+            document.getElementById('sidebar');
+
+        const overlay =
+            document.getElementById('sidebarOverlay');
+
+        sidebar.classList.toggle('open');
+
+        overlay.classList.toggle('show');
+
+    }
+
+
+    function closeSidebar() {
+
+        const sidebar =
+            document.getElementById('sidebar');
+
+        const overlay =
+            document.getElementById('sidebarOverlay');
+
+        sidebar.classList.remove('open');
+
+        overlay.classList.remove('show');
+
+    }
+
+
+    /*
+    ============================================================
+    NAVEGAÇÃO DO MENU
+    ============================================================
+    */
+
+    function navigateTo(
+        sectionId,
+        button
+    ) {
+
+        const section =
+            document.getElementById(sectionId);
+
+        if (!section) {
+            return;
+        }
+
+
+        document.querySelectorAll(
+            '.nav-button'
+        ).forEach(btn => {
+
+            btn.classList.remove(
+                'active'
+            );
+
+        });
+
+
+        if (button) {
+
+            button.classList.add(
+                'active'
+            );
+
+        }
+
+
+        section.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+
+
+        closeSidebar();
+
+    }
+
+
+    /*
+    ============================================================
+    FORMATAR DATA
+    ============================================================
+    */
+
+    function formatDate(
+        value
+    ) {
+
+        if (!value) {
+            return '—';
+        }
+
+
+        const d =
+            new Date(value);
+
+
+        if (isNaN(d.getTime())) {
+            return '—';
+        }
+
+
+        const dia =
+            String(
+                d.getUTCDate()
+            ).padStart(2, '0');
+
+
+        const mes =
+            String(
+                d.getUTCMonth() + 1
+            ).padStart(2, '0');
+
+
+        const ano =
+            d.getUTCFullYear();
+
+
+        return `${dia}/${mes}/${ano}`;
+
+    }
+
+
+    /*
+    ============================================================
+    FORMATAÇÃO DE MOEDA
+    ============================================================
+    */
+
+    function money(
+        value
+    ) {
+
+        return Number(
+            value || 0
+        ).toLocaleString(
+            'pt-BR',
+            {
+                style: 'currency',
+                currency: 'BRL'
+            }
+        );
+
+    }
+
+
+    /*
+    ============================================================
+    DASHBOARD
+    ============================================================
+    */
+
+    async function loadDashboard() {
+
+        try {
+
+            /*
+            ----------------------------------------------------
+            PERFIL
+            ----------------------------------------------------
+            */
+
+            const res =
+                await fetch(
+                    `${API}/user/profile`,
+                    {
+                        method: 'GET',
+                        headers: getHeaders()
+                    }
+                );
+
+
+            if (
+                res.status === 401 ||
+                res.status === 403
+            ) {
+
+                localStorage.clear();
+
+                location.href =
+                    'auth.html';
+
+                return;
+
+            }
+
+
+            const data =
+                await res.json();
+
+
+            if (
+                data &&
+                !data.error
+            ) {
+
+                document.getElementById(
+                    'walletBalance'
+                ).innerText =
+                    money(
+                        data.wallet_balance
+                    );
+
+
+                document.getElementById(
+                    'profitBalance'
+                ).innerText =
+                    money(
+                        data.profit_balance
+                    );
+
+
+                document.getElementById(
+                    'referralEarnings'
+                ).innerText =
+                    money(
+                        data.total_referral_earnings
+                    );
+
+
+                /*
+                ------------------------------------------------
+                PIX
+                ------------------------------------------------
+                */
+
+                if (data.pix_key) {
+
+                    document.getElementById(
+                        'pixKeyDisplay'
+                    ).innerText =
+                        data.pix_key;
+
+                }
+
+
+                /*
+                ------------------------------------------------
+                AFILIADO
+                ------------------------------------------------
+                */
+
+                if (
+                    data.affiliate_code
+                ) {
+
+                    const baseUrl =
+                        window.location.origin;
+
+
+                    document.getElementById(
+                        'referralLink'
+                    ).value =
+                        `${baseUrl}/auth.html?ref=${data.affiliate_code}`;
+
+                }
+
+            }
+
+
+            /*
+            ====================================================
+            PRODUTOS
+            ====================================================
+            */
+
+            const resProducts =
+                await fetch(
+                    `${API}/products`,
+                    {
+                        method: 'GET',
+                        headers: getHeaders()
+                    }
+                );
+
+
+            const products =
+                await resProducts.json();
+
+
+            const container =
+                document.getElementById(
+                    'productsContainer'
+                );
+
+
+            if (container) {
+
+                container.innerHTML = '';
+
+
+                if (
+                    Array.isArray(products) &&
+                    products.length > 0
+                ) {
+
+                    products.forEach(
+                        p => {
+
+                            container.innerHTML += `
+
+                                <div class="product-card">
+
+                                    ${
+                                        p.image_url
+                                            ?
+                                            `
+                                            <img
+                                                src="${p.image_url}"
+                                                class="w-full aspect-square
+                                                       object-cover
+                                                       bg-[#080c14]
+                                                       rounded-xl
+                                                       border border-slate-800
+                                                       mb-4">
+                                            `
+                                            :
+                                            `
+                                            <div class="w-full aspect-square
+                                                        bg-[#080c14]
+                                                        rounded-xl
+                                                        border border-slate-800
+                                                        mb-4
+                                                        flex items-center
+                                                        justify-center">
+
+                                                <i class="fa-solid fa-microchip
+                                                          text-slate-700
+                                                          text-4xl"></i>
+
+                                            </div>
+                                            `
+                                    }
+
+
+                                    <div>
+
+                                        <h3 class="text-sm
+                                                   font-bold
+                                                   text-white">
+
+                                            ${p.title || 'Máquina'}
+
+                                        </h3>
+
+
+                                        <p class="text-[10px]
+                                                  text-slate-500
+                                                  mt-1
+                                                  min-h-[30px]">
+
+                                            ${p.description || ''}
+
+                                        </p>
+
+
+                                        <div class="space-y-2 mt-4">
+
+                                            <div class="flex
+                                                        justify-between
+                                                        text-[10px]">
+
+                                                <span class="text-slate-500">
+                                                    Investimento
+                                                </span>
+
+                                                <span class="text-white font-bold">
+                                                    ${money(p.price)}
+                                                </span>
+
+                                            </div>
+
+
+                                            <div class="flex
+                                                        justify-between
+                                                        text-[10px]">
+
+                                                <span class="text-slate-500">
+                                                    Retorno diário
+                                                </span>
+
+                                                <span class="text-emerald-400 font-bold">
+                                                    ${p.daily_yield_percent || 0}%
+                                                </span>
+
+                                            </div>
+
+
+                                            <div class="flex
+                                                        justify-between
+                                                        text-[10px]">
+
+                                                <span class="text-slate-500">
+                                                    Duração
+                                                </span>
+
+                                                <span class="text-blue-400 font-bold">
+                                                    ${p.duration_days || 0} dias
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <button
+                                        onclick="buyProduct('${p.id}')"
+                                        class="primary-button
+                                               w-full
+                                               mt-5
+                                               text-xs">
+
+                                        <i class="fa-solid fa-power-off mr-2"></i>
+
+                                        Ativar Mineração
+
+                                    </button>
+
+                                </div>
+
+                            `;
+
+                        }
+                    );
+
+                } else {
+
+                    container.innerHTML = `
+
+                        <div class="col-span-full
+                                    text-center
+                                    py-10
+                                    text-slate-600">
+
+                            <i class="fa-solid fa-box-open
+                                      text-2xl mb-2"></i>
+
+                            <div class="text-xs">
+                                Nenhuma máquina disponível.
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }
+
+            }
+
+
+            /*
+            ====================================================
+            INVESTIMENTOS
+            ====================================================
+            */
+
+            const resInvestments =
+                await fetch(
+                    `${API}/user/investments`,
+                    {
+                        method: 'GET',
+                        headers: getHeaders()
+                    }
+                );
+
+
+            const investments =
+                await resInvestments.json();
+
+
+            const invContainer =
+                document.getElementById(
+                    'investmentsContainer'
+                );
+
+
+            if (invContainer) {
+
+                invContainer.innerHTML = '';
+
+
+                if (
+                    Array.isArray(investments) &&
+                    investments.length > 0
+                ) {
+
+                    investments.forEach(
+                        inv => {
+
+                            const date =
+                                formatDate(
+                                    inv.created_at
+                                );
+
+
+                            const dailyReturn =
+                                Number(
+                                    inv.daily_yield_amount || 0
+                                );
+
+
+                            const purchasePrice =
+                                Number(
+                                    inv.purchase_price || 0
+                                );
+
+
+                            const daysPaid =
+                                inv.days_paid || 0;
+
+
+                            const totalDays =
+                                inv.total_days ||
+                                inv.duration_days ||
+                                0;
+
+
+                            const status =
+                                String(
+                                    inv.status ||
+                                    'active'
+                                ).toLowerCase();
+
+
+                            let statusBadge;
+
+
+                            if (
+                                status === 'active' ||
+                                status === 'minerando'
+                            ) {
+
+                                statusBadge = `
+
+                                    <span class="
+                                        inline-flex
+                                        items-center
+                                        gap-1
+                                        text-emerald-400
+                                        bg-emerald-500/10
+                                        px-2 py-1
+                                        rounded-lg
+                                        border
+                                        border-emerald-500/20
+                                        font-bold
+                                        uppercase
+                                        text-[9px]">
+
+                                        <span class="w-1.5 h-1.5
+                                                     bg-emerald-400
+                                                     rounded-full"></span>
+
+                                        Minerando
+
+                                    </span>
+
+                                `;
+
+                            } else {
+
+                                statusBadge = `
+
+                                    <span class="
+                                        text-slate-500
+                                        bg-slate-500/10
+                                        px-2 py-1
+                                        rounded-lg
+                                        border
+                                        border-slate-800
+                                        font-bold
+                                        uppercase
+                                        text-[9px]">
+
+                                        Finalizado
+
+                                    </span>
+
+                                `;
+
+                            }
+
+
+                            invContainer.innerHTML += `
+
+                                <tr class="hover:bg-slate-900/40 transition">
+
+                                    <td class="py-3 px-2 text-slate-400">
+                                        ${date}
+                                    </td>
+
+
+                                    <td class="py-3 px-2 text-white font-semibold">
+
+                                        ${
+                                            purchasePrice > 0
+                                                ? money(purchasePrice)
+                                                : 'Ativa'
+                                        }
+
+                                    </td>
+
+
+                                    <td class="py-3 px-2 text-emerald-400 font-semibold">
+
+                                        +${money(dailyReturn)}/dia
+
+                                    </td>
+
+
+                                    <td class="py-3 px-2 text-slate-300">
+
+                                        ${daysPaid} / ${totalDays}
+
+                                    </td>
+
+
+                                    <td class="py-3 px-2">
+
+                                        ${statusBadge}
+
+                                    </td>
+
+                                </tr>
+
+                            `;
+
+                        }
+                    );
+
+                } else {
+
+                    invContainer.innerHTML = `
+
+                        <tr>
+
+                            <td colspan="5"
+                                class="text-center
+                                       py-10
+                                       text-slate-600">
+
+                                <i class="fa-solid fa-microchip
+                                          text-xl mb-2"></i>
+
+                                <div>
+                                    Você ainda não possui máquinas.
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }
+
+            }
+
+
+            /*
+            ====================================================
+            HISTÓRICO DE SAQUES
+            ====================================================
+            */
+
+            await loadWithdrawals();
+
+
+        } catch (err) {
+
+            console.error(
+                'Erro ao carregar painel:',
+                err
+            );
+
+
+            const invContainer =
+                document.getElementById(
+                    'investmentsContainer'
+                );
+
+
+            if (invContainer) {
+
+                invContainer.innerHTML = `
+
+                    <tr>
+
+                        <td colspan="5"
+                            class="text-center
+                                   py-8
+                                   text-red-400">
+
+                            <i class="fa-solid fa-triangle-exclamation mr-2"></i>
+
+                            Erro ao carregar os dados.
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+
+        }
+
+    }
+
+
+    /*
+    ============================================================
+    HISTÓRICO DE SAQUES
+    ============================================================
+    */
+
+    async function loadWithdrawals() {
+
+        const container =
+            document.getElementById(
+                'withdrawalsContainer'
+            );
+
+
+        if (!container) {
+            return;
+        }
+
+
+        try {
+
+            const res =
+                await fetch(
+                    `${API}/user/withdrawals`,
+                    {
+                        method: 'GET',
+                        headers: getHeaders()
+                    }
+                );
+
+
+            if (
+                res.status === 401 ||
+                res.status === 403
+            ) {
+
+                localStorage.clear();
+
+                location.href =
+                    'auth.html';
+
+                return;
+
+            }
+
+
+            const withdrawals =
+                await res.json();
+
+
+            container.innerHTML = '';
+
+
+            if (
+                !Array.isArray(withdrawals) ||
+                withdrawals.length === 0
+            ) {
+
+                container.innerHTML = `
+
+                    <tr>
+
+                        <td colspan="6"
+                            class="text-center
+                                   py-10
+                                   text-slate-600">
+
+                            <i class="fa-solid fa-receipt
+                                      text-xl mb-2"></i>
+
+                            <div>
+                                Nenhum saque solicitado ainda.
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+                return;
+
+            }
+
+
+            withdrawals.forEach(
+                withdrawal => {
+
+                    const date =
+                        formatDate(
+                            withdrawal.created_at
+                        );
+
+
+                    const amount =
+                        Number(
+                            withdrawal.requested_amount || 0
+                        );
+
+
+                    const fee =
+                        Number(
+                            withdrawal.fee || 0
+                        );
+
+
+                    const net =
+                        amount - fee;
+
+
+                    const status =
+                        String(
+                            withdrawal.status ||
+                            'pending'
+                        ).toLowerCase();
+
+
+                    let badge;
+
+
+                    /*
+                    --------------------------------------------
+                    PAGO
+                    --------------------------------------------
+                    */
+
+                    if (
+                        status === 'approved' ||
+                        status === 'paid'
+                    ) {
+
+                        badge = `
+
+                            <span class="
+                                inline-flex
+                                items-center
+                                gap-1.5
+                                text-emerald-400
+                                bg-emerald-500/10
+                                px-2.5 py-1.5
+                                rounded-lg
+                                border
+                                border-emerald-500/20
+                                font-bold
+                                text-[9px]">
+
+                                <i class="fa-solid fa-check"></i>
+
+                                PAGO
+
+                            </span>
+
+                        `;
+
+                    }
+
+
+                    /*
+                    --------------------------------------------
+                    REJEITADO
+                    --------------------------------------------
+                    */
+
+                    else if (
+                        status === 'rejected'
+                    ) {
+
+                        badge = `
+
+                            <span class="
+                                inline-flex
+                                items-center
+                                gap-1.5
+                                text-red-400
+                                bg-red-500/10
+                                px-2.5 py-1.5
+                                rounded-lg
+                                border
+                                border-red-500/20
+                                font-bold
+                                text-[9px]">
+
+                                <i class="fa-solid fa-xmark"></i>
+
+                                REJEITADO
+
+                            </span>
+
+                        `;
+
+                    }
+
+
+                    /*
+                    --------------------------------------------
+                    PENDENTE
+                    --------------------------------------------
+                    */
+
+                    else {
+
+                        badge = `
+
+                            <span class="
+                                inline-flex
+                                items-center
+                                gap-1.5
+                                text-amber-400
+                                bg-amber-500/10
+                                px-2.5 py-1.5
+                                rounded-lg
+                                border
+                                border-amber-500/20
+                                font-bold
+                                text-[9px]">
+
+                                <i class="fa-solid fa-clock"></i>
+
+                                PENDENTE
+
+                            </span>
+
+                        `;
+
+                    }
+
+
+                    /*
+                    --------------------------------------------
+                    PIX MASCARADO
+                    --------------------------------------------
+                    */
+
+                    const pix =
+                        withdrawal.pix_key ||
+                        '—';
+
+
+                    let pixDisplay =
+                        pix;
+
+
+                    if (
+                        pix.length > 14
+                    ) {
+
+                        pixDisplay =
+                            pix.substring(
+                                0,
+                                6
+                            ) +
+                            '••••' +
+                            pix.substring(
+                                pix.length - 4
+                            );
+
+                    }
+
+
+                    container.innerHTML += `
+
+                        <tr class="
+                            hover:bg-slate-900/40
+                            transition">
+
+                            <td class="
+                                py-4 px-2
+                                text-slate-400
+                                whitespace-nowrap">
+
+                                ${date}
+
+                            </td>
+
+
+                            <td class="
+                                py-4 px-2
+                                text-white
+                                font-bold
+                                whitespace-nowrap">
+
+                                ${money(amount)}
+
+                            </td>
+
+
+                            <td class="
+                                py-4 px-2
+                                text-slate-400
+                                whitespace-nowrap">
+
+                                ${money(fee)}
+
+                            </td>
+
+
+                            <td class="
+                                py-4 px-2
+                                text-emerald-400
+                                font-bold
+                                whitespace-nowrap">
+
+                                ${money(net)}
+
+                            </td>
+
+
+                            <td class="
+                                py-4 px-2
+                                text-slate-400
+                                max-w-[150px]">
+
+                                <span title="${pix}">
+                                    ${pixDisplay}
+                                </span>
+
+                            </td>
+
+
+                            <td class="py-4 px-2">
+
+                                ${badge}
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }
+            );
+
+
+        } catch (err) {
+
+            console.error(
+                'Erro histórico:',
+                err
+            );
+
+
+            container.innerHTML = `
+
+                <tr>
+
+                    <td colspan="6"
+                        class="text-center
+                               py-8
+                               text-red-400">
+
+                        <i class="fa-solid fa-triangle-exclamation mr-2"></i>
+
+                        Erro ao carregar histórico.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+    }
+
+
+    /*
+    ============================================================
+    COPIAR LINK
+    ============================================================
+    */
+
+    async function copyLink() {
+
+        const input =
+            document.getElementById(
+                'referralLink'
+            );
+
+
+        if (!input.value) {
+            return;
+        }
+
+
+        try {
+
+            await navigator.clipboard.writeText(
+                input.value
+            );
+
+
+            alert(
+                'Link de convite copiado!'
+            );
+
+
+        } catch (err) {
+
+            input.select();
+
+            document.execCommand(
+                'copy'
+            );
+
+
+            alert(
+                'Link de convite copiado!'
+            );
+
+        }
+
+    }
+
+
+    /*
+    ============================================================
+    COPIAR PIX
+    ============================================================
+    */
+
+    async function copyPix() {
+
+        const pix =
+            document.getElementById(
+                'copiaCola'
+            ).innerText;
+
+
+        if (!pix) {
+            return;
+        }
+
+
+        try {
+
+            await navigator.clipboard.writeText(
+                pix
+            );
+
+
+            alert(
+                'Código PIX copiado!'
+            );
+
+
+        } catch (err) {
+
+            alert(
+                'Não foi possível copiar automaticamente.'
+            );
+
+        }
+
+    }
+
+
+    /*
+    ============================================================
+    COMPRAR / ATIVAR PRODUTO
+    ============================================================
+    */
+
+    async function buyProduct(
+        productId
+    ) {
+
+        if (
+            !confirm(
+                'Deseja ativar esta máquina com seu saldo de recarga?'
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const res =
+                await fetch(
+                    `${API}/products/buy`,
+                    {
+                        method: 'POST',
+
+                        headers:
+                            getHeaders(),
+
+                        body:
+                            JSON.stringify({
+                                productId:
+                                    productId
+                            })
+                    }
+                );
+
+
+            const data =
+                await res.json();
+
+
+            if (data.error) {
+
+                alert(
+                    data.error
+                );
+
+                return;
+
+            }
+
+
+            alert(
+                'Sucesso! Sua máquina já está minerando.'
+            );
+
+
+            await loadDashboard();
+
+
+        } catch (err) {
+
+            console.error(
+                err
+            );
+
+
+            alert(
+                'Erro ao ativar mineração.'
+            );
+
+        }
+
+    }
+
+
+    /*
+    ============================================================
+    DEPÓSITO PIX
+    ============================================================
+    */
+
+    async function deposit() {
+
+        const amount =
+            document.getElementById(
+                'depAmount'
+            ).value;
+
+
+        if (
+            !amount ||
+            Number(amount) < 5
+        ) {
+
+            alert(
+                'Digite um valor válido. O mínimo é R$ 5,00.'
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            const res =
+                await fetch(
+                    `${API}/payments/deposit`,
+                    {
+                        method: 'POST',
+
+                        headers:
+                            getHeaders(),
+
+                        body:
+                            JSON.stringify({
+                                amount:
+                                    parseFloat(
+                                        amount
+                                    )
+                            })
+                    }
+                );
+
+
+            const data =
+                await res.json();
+
+
+            if (data.error) {
+
+                alert(
+                    data.error
+                );
+
+                return;
+
+            }
+
+
+            if (data.success) {
+
+                document.getElementById(
+                    'pixContainer'
+                ).classList.remove(
+                    'hidden'
+                );
+
+
+                document.getElementById(
+                    'qrcodeImg'
+                ).src =
+                    `data:image/png;base64,${data.qrCode}`;
+
+
+                document.getElementById(
+                    'copiaCola'
+                ).innerText =
+                    data.copyPaste;
+
+
+                document.getElementById(
+                    'pixContainer'
+                ).scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+
+            }
+
+
+        } catch (err) {
+
+            console.error(
+                err
+            );
+
+
+            alert(
+                'Erro ao gerar código PIX.'
+            );
+
+        }
+
+    }
+
+
+    /*
+    ============================================================
+    SAQUE
+    ============================================================
+    */
+
+    async function withdraw() {
+
+        const input =
+            document.getElementById(
+                'witAmount'
+            );
+
+
+        const amount =
+            input.value;
+
+
+        if (
+            !amount ||
+            Number(amount) <= 0
+        ) {
+
+            alert(
+                'Digite um valor válido para saque.'
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !confirm(
+                `Confirma o saque de ${money(amount)}?`
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const res =
+                await fetch(
+                    `${API}/withdraw/request`,
+                    {
+                        method: 'POST',
+
+                        headers:
+                            getHeaders(),
+
+                        body:
+                            JSON.stringify({
+                                amount:
+                                    parseFloat(
+                                        amount
+                                    )
+                            })
+                    }
+                );
+
+
+            const data =
+                await res.json();
+
+
+            if (data.error) {
+
+                alert(
+                    data.error
+                );
+
+                return;
+
+            }
+
+
+            if (data.success) {
+
+                alert(
+                    'Saque solicitado com sucesso! Aguarde a aprovação.'
+                );
+
+
+                input.value = '';
+
+
+                /*
+                Atualiza saldo e histórico
+                */
+
+                await loadDashboard();
+
+
+                /*
+                Leva para histórico
+                */
+
+                document
+                    .getElementById(
+                        'withdraw-history'
+                    )
+                    .scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+
+            }
+
+
+        } catch (err) {
+
+            console.error(
+                err
+            );
+
+
+            alert(
+                'Erro ao solicitar saque.'
+            );
+
+        }
+
+    }
+
+
+    /*
+    ============================================================
+    INICIALIZAÇÃO
+    ============================================================
+    */
+
+    document.addEventListener(
+        'DOMContentLoaded',
+        function() {
+
+            /*
+            Verifica token
+            */
+
+            const token =
+                localStorage.getItem(
+                    'token'
+                );
+
+
+            if (!token) {
+
+                location.href =
+                    'auth.html';
+
+                return;
+
+            }
+
+
+            /*
+            Carrega dashboard
+            */
+
+            loadDashboard();
+
+
+            /*
+            Fecha sidebar com ESC
+            */
+
+            document.addEventListener(
+                'keydown',
+                function(event) {
+
+                    if (
+                        event.key === 'Escape'
+                    ) {
+
+                        closeSidebar();
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+    /*
+    ============================================================
+    ATUALIZAÇÃO AUTOMÁTICA DO MENU
+    ============================================================
+    */
+
+    const observedSections = [
+
+        'dashboard',
+        'mining',
+        'machines',
+        'deposit',
+        'withdraw',
+        'withdraw-history',
+        'affiliate'
+
+    ];
+
+
+    const observer =
+        new IntersectionObserver(
+            entries => {
+
+                entries.forEach(
+                    entry => {
+
+                        if (
+                            entry.isIntersecting
+                        ) {
+
+                            const id =
+                                entry.target.id;
+
+
+                            const buttons =
+                                document.querySelectorAll(
+                                    '.nav-button'
+                                );
+
+
+                            buttons.forEach(
+                                button => {
+
+                                    button.classList.remove(
+                                        'active'
+                                    );
+
+
+                                    const onclick =
+                                        button.getAttribute(
+                                            'onclick'
+                                        );
+
+
+                                    if (
+                                        onclick &&
+                                        onclick.includes(
+                                            `'${id}'`
+                                        )
+                                    ) {
+
+                                        button.classList.add(
+                                            'active'
+                                        );
+
+                                    }
+
+                                }
+                            );
+
+                        }
+
+                    }
+                );
+
+            },
+            {
+                threshold: 0.25,
+                rootMargin: '-80px 0px -45% 0px'
+            }
+        );
+
+
+    observedSections.forEach(
+        id => {
+
+            const element =
+                document.getElementById(
+                    id
+                );
+
+
+            if (element) {
+
+                observer.observe(
+                    element
+                );
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+</html>
