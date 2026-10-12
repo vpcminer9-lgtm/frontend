@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VPCMiner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #060910;
+            color: #e8eef7;
+            padding-bottom: 88px;
+            margin: 0;
+        }
+        ::-webkit-scrollbar { width: 0; }
+
+        /* Banner */
+        .banner {
+            height: 200px;
+            background:
+                linear-gradient(180deg, rgba(6,9,16,0.15) 0%, rgba(6,9,16,0.65) 70%, #060910 100%),
+                url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80') center/cover no-repeat;
+            position: relative;
+        }
+        .avatar {
+            position: absolute;
+            bottom: -32px;
+            right: 18px;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 4px solid #060910;
+            background: #111827;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Quick actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
+            padding: 48px 12px 18px;
+        }
+        .quick-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            font-size: 9.5px;
+            font-weight: 500;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quick-item:active { transform: scale(0.96); }
+        .quick-icon-wrap {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            color: #60a5fa;
+        }
+
+        /* Tabs */
+        .tabs-wrap {
+            display: flex;
+            gap: 8px;
+            padding: 0 16px 14px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .tabs-wrap::-webkit-scrollbar { display: none; }
+        .tab {
+            padding: 7px 16px;
+            border-radius: 999px;
+            font-size: 12.5px;
+            font-weight: 600;
+            white-space: nowrap;
+            background: #111827;
+            color: #94a3b8;
+            border: 1px solid #1e293b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab.active {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+        }
+
+        /* Product card */
+        .product-card {
+            background: #0c1222;
+            border: 1px solid #1e293b;
+            border-radius: 18px;
+            padding: 14px;
+            margin-bottom: 14px;
+            transition: border-color 0.2s;
+        }
+        .product-card:hover { border-color: #334155; }
+        .product-img {
+            width: 92px;
+            height: 92px;
+            background: #000;
+            border-radius: 12px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+        .days-badge {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 999px;
+            letter-spacing: 0.3px;
+        }
+        .stock-badge {
+            background: rgba(16, 185, 129, 0.12);
+            color: #34d399;
+            font-size: 9.5px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        /* Bottom nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 76px;
+            background: rgba(8, 12, 20, 0.92);
+            backdrop-filter: blur(16px);
+            border-top: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+        .nav-item.active {
+            color: #60a5fa;
+        }
+        .nav-item i { font-size: 20px; }
+
+        /* Sections */
+        .page-section { display: none; padding: 0 16px 24px; }
+        .page-section.active { display: block; }
+
+        /* Cards / panels */
+        .glass-card {
+            background: rgba(12, 18, 34, 0.8);
+            border: 1px solid #1e293b;
+            border-radius: 18px;
+            overflow: hidden;
+        }
+        .glass-header {
+            padding: 16px 16px 12px;
+            border-bottom: 1px solid #1e293b;
+            font-weight: 700;
+            font-size: 15px;
+        }
+        .glass-body { padding: 16px; }
+
+        /* Inputs & buttons */
+        .input {
+            width: 100%;
+            background: #060910;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 13px 14px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .input:focus { border-color: #3b82f6; }
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            font-weight: 700;
+            border-radius: 12px;
+            padding: 13px;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+        }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-success {
+            background: linear-gradient(135deg, #059669, #047857);
+            color: white;
+            font-weight: 700;
+            border-radius: 12px;
+            padding: 13px;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Live list */
+        .live-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            background: #0c1222;
+            border: 1px solid #1e293b;
+            border-radius: 14px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        /* Table */
+        table { width: 100%; font-size: 12px; border-collapse: collapse; }
+        th { color: #64748b; font-weight: 600; text-align: left; padding: 10px 6px; border-bottom: 1px solid #1e293b; }
+        td { padding: 12px 6px; border-bottom: 1px solid #111827; }
+    </style>
+</head>
+<body>
+
+<div class="banner">
+    <div class="avatar">
+        <img src="https://api.dicebear.com/9.x/notionists/svg?seed=VPCMiner&backgroundColor=1e293b" alt="avatar">
+    </div>
+</div>
+
+<div class="quick-actions">
+    <div class="quick-item" onclick="showSection('equipe')">
+        <div class="quick-icon-wrap"><i class="fa-solid fa-user-plus"></i></div>
+        <span>Compartilhar</span>
+    </div>
+    <div class="quick-item">
+        <div class="quick-icon-wrap"><i class="fa-solid fa-newspaper"></i></div>
+        <span>Notícias</span>
+    </div>
+    <div class="quick-item">
+        <div class="quick-icon-wrap"><i class="fa-solid fa-building"></i></div>
+        <span>Empresa</span>
+    </div>
+    <div class="quick-item">
+        <div class="quick-icon-wrap"><i class="fa-solid fa-calendar-check"></i></div>
+        <span>Check-in</span>
+    </div>
+    <div class="quick-item">
+        <div class="quick-icon-wrap"><i class="fa-solid fa-shield-halved"></i></div>
+        <span>Regras</span>
+    </div>
+    <div class="quick-item">
+        <div class="quick-icon-wrap"><i class="fa-solid fa-star"></i></div>
+        <span>VIP</span>
+    </div>
+</div>
+
+<div class="tabs-wrap">
+    <div class="tab active">AI</div>
+    <div class="tab">NVIP</div>
+    <div class="tab">Super AI</div>
+    <div class="tab">Limited-Time</div>
+</div>
+
+<!-- HOME -->
+<section id="home" class="page-section active">
+    <div id="productsContainer"></div>
+
+    <div class="mt-8">
+        <div class="flex items-center justify-between mb-3 px-1">
+            <span class="text-xs font-bold tracking-wider text-slate-400">REGISTROS DE SAQUE</span>
+            <span class="text-[11px] text-emerald-400 font-medium flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span> AO VIVO
+            </span>
+        </div>
+        <div id="liveWithdrawals"></div>
+    </div>
+</section>
+
+<!-- ATIVIDADE -->
+<section id="atividade" class="page-section">
+    <div class="glass-card">
+        <div class="glass-header">Minhas Máquinas</div>
+        <div class="glass-body">
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Investimento</th>
+                            <th>Rend. Diário</th>
+                            <th>Progresso</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="investmentsContainer">
+                        <tr><td colspan="5" class="text-center py-10 text-slate-500">Carregando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- EQUIPE -->
+<section id="equipe" class="page-section">
+    <div class="glass-card">
+        <div class="glass-header">Programa de Afiliados</div>
+        <div class="glass-body">
+            <div class="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 mb-5 text-sm text-amber-200">
+                Ganhe <strong>12%</strong> de comissão sobre os depósitos dos seus convidados.
+            </div>
+            <label class="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Seu link de convite</label>
+            <div class="flex gap-2 mt-2">
+                <input type="text" id="referralLink" readonly class="input flex-1" value="Carregando...">
+                <button onclick="copyLink()" class="btn-primary !w-auto px-5">Copiar</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- RECARREGAR -->
+<section id="recarregar" class="page-section">
+    <div class="glass-card">
+        <div class="glass-header">Adicionar Saldo</div>
+        <div class="glass-body">
+            <label class="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Valor da recarga</label>
+            <input type="number" id="depAmount" placeholder="Mínimo R$ 5,00" class="input mt-2">
+            <button onclick="deposit()" class="btn-primary mt-4">
+                <i class="fa-brands fa-pix mr-2"></i> Gerar Código PIX
+            </button>
+            <div id="pixContainer" class="hidden mt-6 border border-slate-800 bg-[#060910] p-5 rounded-2xl text-center">
+                <div class="text-emerald-400 font-bold">PIX gerado</div>
+                <img id="qrcodeImg" class="mx-auto w-44 h-44 rounded-xl bg-white p-2 my-4">
+                <div id="copiaCola" class="text-[11px] bg-[#0c1222] p-3 rounded-lg font-mono break-all text-slate-300"></div>
+                <button onclick="copyPix()" class="text-sm text-blue-400 mt-3 font-medium">Copiar código PIX</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PERFIL -->
+<section id="perfil" class="page-section">
+    <div class="grid gap-3 mb-5">
+        <div class="glass-card p-5">
+            <p class="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Saldo de Recarga</p>
+            <h3 id="walletBalance" class="text-2xl font-black text-white mt-1">R$ 0,00</h3>
+        </div>
+        <div class="glass-card p-5">
+            <p class="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Saldo de Rendimentos</p>
+            <h3 id="profitBalance" class="text-2xl font-black text-emerald-400 mt-1">R$ 0,00</h3>
+        </div>
+        <div class="glass-card p-5">
+            <p class="text-[11px] text-slate-500 uppercase tracking-wider font-semibold">Bônus de Convite</p>
+            <h3 id="referralEarnings" class="text-2xl font-black text-amber-400 mt-1">R$ 0,00</h3>
+        </div>
+    </div>
+
+    <div class="glass-card mb-5">
+        <div class="glass-header">Solicitar Saque</div>
+        <div class="glass-body">
+            <div class="text-[11px] text-slate-500 uppercase tracking-wider font-semibold mb-1">Chave PIX cadastrada</div>
+            <div class="bg-[#060910] border border-slate-800 rounded-xl px-4 py-3 text-sm mb-4">
+                <i class="fa-brands fa-pix text-blue-400 mr-2"></i>
+                <span id="pixKeyDisplay">—</span>
+            </div>
+            <input type="number" id="witAmount" placeholder="Valor do saque" class="input">
+            <button onclick="withdraw()" class="btn-success mt-4">Solicitar Saque</button>
+        </div>
+    </div>
+
+    <div class="glass-card">
+        <div class="glass-header flex justify-between items-center">
+            <span>Histórico de Saques</span>
+            <button onclick="loadWithdrawals()" class="text-xs text-blue-400 font-medium">Atualizar</button>
+        </div>
+        <div class="glass-body">
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Valor</th>
+                            <th>Líquido</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="withdrawalsContainer">
+                        <tr><td colspan="4" class="text-center py-8 text-slate-500">Carregando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <button onclick="logout()" class="w-full mt-6 py-3.5 text-sm text-slate-400 border border-slate-800 rounded-2xl font-medium">
+        <i class="fa-solid fa-right-from-bracket mr-2"></i> Sair da Conta
+    </button>
+</section>
+
+<nav class="bottom-nav">
+    <div class="nav-item active" onclick="showSection('home', this)">
+        <i class="fa-solid fa-house"></i>
+        <span>Início</span>
+    </div>
+    <div class="nav-item" onclick="showSection('atividade', this)">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Atividade</span>
+    </div>
+    <div class="nav-item" onclick="showSection('equipe', this)">
+        <i class="fa-solid fa-users"></i>
+        <span>Equipe</span>
+    </div>
+    <div class="nav-item" onclick="showSection('recarregar', this)">
+        <i class="fa-solid fa-bolt"></i>
+        <span>Recarregar</span>
+    </div>
+    <div class="nav-item" onclick="showSection('perfil', this)">
+        <i class="fa-solid fa-user"></i>
+        <span>Perfil</span>
+    </div>
+</nav>
+
+<script>
+    const API = 'https://blackend-6b0w.onrender.com/api';
+
+    function getHeaders() {
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        };
+    }
+
+    function logout() {
+        localStorage.clear();
+        location.href = 'auth.html';
+    }
+
+    function showSection(id, btn) {
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function formatDate(value) {
+        if (!value) return '—';
+        const d = new Date(value);
+        if (isNaN(d.getTime())) return '—';
+        return `${String(d.getUTCDate()).padStart(2,'0')}/${String(d.getUTCMonth()+1).padStart(2,'0')}/${d.getUTCFullYear()}`;
+    }
+
+    function money(value) {
+        return Number(value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    async function loadDashboard() {
+        try {
+            const res = await fetch(`${API}/user/profile`, { method: 'GET', headers: getHeaders() });
+            if (res.status === 401 || res.status === 403) {
+                localStorage.clear();
+                location.href = 'auth.html';
+                return;
+            }
+            const data = await res.json();
+            if (data && !data.error) {
+                document.getElementById('walletBalance').innerText = money(data.wallet_balance);
+                document.getElementById('profitBalance').innerText = money(data.profit_balance);
+                document.getElementById('referralEarnings').innerText = money(data.total_referral_earnings);
+                if (data.pix_key) document.getElementById('pixKeyDisplay').innerText = data.pix_key;
+                if (data.affiliate_code) {
+                    document.getElementById('referralLink').value = `${window.location.origin}/auth.html?ref=${data.affiliate_code}`;
+                }
+            }
+
+            // Products
+            const resProducts = await fetch(`${API}/products`, { method: 'GET', headers: getHeaders() });
+            const products = await resProducts.json();
+            const container = document.getElementById('productsContainer');
+            if (container) {
+                container.innerHTML = '';
+                if (Array.isArray(products) && products.length > 0) {
+                    products.forEach(p => {
+                        const totalReturn = (Number(p.price)||0) * (Number(p.daily_yield_percent)||0)/100 * (Number(p.duration_days)||1);
+                        const img = p.image_url
+                            ? `<img src="${p.image_url}" class="product-img" alt="">`
+                            : `<div class="product-img flex items-center justify-center"><i class="fa-solid fa-microchip text-slate-700 text-3xl"></i></div>`;
+
+                        container.innerHTML += `
+                            <div class="product-card">
+                                <div class="flex gap-3.5">
+                                    ${img}
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex justify-between items-start gap-2">
+                                            <h3 class="text-[15px] font-bold text-white leading-tight">${p.title || 'Máquina'}</h3>
+                                            <span class="days-badge">${p.duration_days || 0} Dias</span>
+                                        </div>
+                                        <div class="text-[11px] text-slate-400 mt-2">Disponibilidade: <span class="stock-badge">Em estoque</span></div>
+                                        <div class="text-[11px] text-slate-400 mt-0.5">Limite de Compra: <span class="text-white font-medium">5</span></div>
+                                        <div class="text-[11px] text-slate-400 mt-1.5">Receita Total <span class="text-emerald-400 font-bold">${money(totalReturn)}</span></div>
+                                        <div class="text-[11px] text-slate-400">Valor do aluguel <span class="text-amber-400 font-bold">${money(p.price)}</span></div>
+                                    </div>
+                                </div>
+                                <button onclick="buyProduct('${p.id}')" class="btn-primary text-sm mt-4">
+                                    Ativar Mineração
+                                </button>
+                            </div>
+                        `;
+                    });
+                } else {
+                    container.innerHTML = `<div class="text-center py-12 text-slate-500">Nenhuma máquina disponível no momento.</div>`;
+                }
+            }
+
+            // Investments
+            const resInv = await fetch(`${API}/user/investments`, { method: 'GET', headers: getHeaders() });
+            const investments = await resInv.json();
+            const invContainer = document.getElementById('investmentsContainer');
+            if (invContainer) {
+                invContainer.innerHTML = '';
+                if (Array.isArray(investments) && investments.length > 0) {
+                    investments.forEach(inv => {
+                        const status = String(inv.status || 'active').toLowerCase();
+                        const badge = (status === 'active' || status === 'minerando')
+                            ? `<span class="text-emerald-400 text-[11px] font-semibold">Minerando</span>`
+                            : `<span class="text-slate-500 text-[11px]">Finalizado</span>`;
+                        invContainer.innerHTML += `
+                            <tr>
+                                <td class="text-slate-400">${formatDate(inv.created_at)}</td>
+                                <td class="text-white font-medium">${Number(inv.purchase_price) > 0 ? money(inv.purchase_price) : '—'}</td>
+                                <td class="text-emerald-400">+${money(inv.daily_yield_amount || 0)}</td>
+                                <td>${inv.days_paid || 0}/${inv.total_days || inv.duration_days || 0}</td>
+                                <td>${badge}</td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    invContainer.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-slate-500">Você ainda não possui máquinas ativas.</td></tr>`;
+                }
+            }
+
+            await loadWithdrawals();
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function loadWithdrawals() {
+        const container = document.getElementById('withdrawalsContainer');
+        const live = document.getElementById('liveWithdrawals');
+        try {
+            const res = await fetch(`${API}/user/withdrawals`, { method: 'GET', headers: getHeaders() });
+            if (res.status === 401 || res.status === 403) {
+                localStorage.clear();
+                location.href = 'auth.html';
+                return;
+            }
+            const list = await res.json();
+
+            if (container) {
+                container.innerHTML = '';
+                if (!Array.isArray(list) || list.length === 0) {
+                    container.innerHTML = `<tr><td colspan="4" class="text-center py-10 text-slate-500">Nenhum saque solicitado.</td></tr>`;
+                } else {
+                    list.forEach(w => {
+                        const status = String(w.status || 'pending').toLowerCase();
+                        let badge = status === 'approved' || status === 'paid'
+                            ? `<span class="text-emerald-400 font-semibold text-[11px]">PAGO</span>`
+                            : status === 'rejected'
+                            ? `<span class="text-red-400 text-[11px]">REJEITADO</span>`
+                            : `<span class="text-amber-400 text-[11px]">PENDENTE</span>`;
+                        container.innerHTML += `
+                            <tr>
+                                <td class="text-slate-400">${formatDate(w.created_at)}</td>
+                                <td class="text-white font-semibold">${money(w.requested_amount)}</td>
+                                <td class="text-emerald-400">${money((w.requested_amount||0) - (w.fee||0))}</td>
+                                <td>${badge}</td>
+                            </tr>
+                        `;
+                    });
+                }
+            }
+
+            if (live) {
+                live.innerHTML = '';
+                const recent = Array.isArray(list) ? list.slice(0, 6) : [];
+                if (recent.length === 0) {
+                    live.innerHTML = `<div class="text-center text-sm text-slate-600 py-6">Nenhum registro recente</div>`;
+                } else {
+                    recent.forEach(w => {
+                        const pix = w.pix_key || '****';
+                        const masked = '****' + pix.slice(-5);
+                        live.innerHTML += `
+                            <div class="live-row">
+                                <span class="text-slate-400">${masked}</span>
+                                <span class="text-emerald-400 font-bold">${money(w.requested_amount)}</span>
+                            </div>
+                        `;
+                    });
+                }
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function copyLink() {
+        const el = document.getElementById('referralLink');
+        try {
+            await navigator.clipboard.writeText(el.value);
+            alert('Link copiado!');
+        } catch {
+            el.select();
+            document.execCommand('copy');
+            alert('Link copiado!');
+        }
+    }
+
+    async function copyPix() {
+        const text = document.getElementById('copiaCola').innerText;
+        if (!text) return;
+        try {
+            await navigator.clipboard.writeText(text);
+            alert('Código PIX copiado!');
+        } catch {
+            alert('Não foi possível copiar.');
+        }
+    }
+
+    async function buyProduct(productId) {
+        if (!confirm('Deseja ativar esta máquina com seu saldo de recarga?')) return;
+        try {
+            const res = await fetch(`${API}/products/buy`, {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify({ productId })
+            });
+            const data = await res.json();
+            if (data.error) return alert(data.error);
+            alert('Máquina ativada com sucesso!');
+            await loadDashboard();
+        } catch {
+            alert('Erro ao ativar mineração.');
+        }
+    }
+
+    async function deposit() {
+        const amount = document.getElementById('depAmount').value;
+        if (!amount || Number(amount) < 5) return alert('Valor mínimo é R$ 5,00');
+        try {
+            const res = await fetch(`${API}/payments/deposit`, {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify({ amount: parseFloat(amount) })
+            });
+            const data = await res.json();
+            if (data.error) return alert(data.error);
+            if (data.success) {
+                document.getElementById('pixContainer').classList.remove('hidden');
+                document.getElementById('qrcodeImg').src = `data:image/png;base64,${data.qrCode}`;
+                document.getElementById('copiaCola').innerText = data.copyPaste;
+            }
+        } catch {
+            alert('Erro ao gerar PIX.');
+        }
+    }
+
+    async function withdraw() {
+        const input = document.getElementById('witAmount');
+        const amount = input.value;
+        if (!amount || Number(amount) <= 0) return alert('Digite um valor válido.');
+        if (!confirm(`Confirmar saque de ${money(amount)}?`)) return;
+        try {
+            const res = await fetch(`${API}/withdraw/request`, {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify({ amount: parseFloat(amount) })
+            });
+            const data = await res.json();
+            if (data.error) return alert(data.error);
+            if (data.success) {
+                alert('Saque solicitado com sucesso!');
+                input.value = '';
+                await loadDashboard();
+                showSection('perfil');
+            }
+        } catch {
+            alert('Erro ao solicitar saque.');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!localStorage.getItem('token')) {
+            location.href = 'auth.html';
+            return;
+        }
+        loadDashboard();
+    });
+</script>
+</body>
+</html>
