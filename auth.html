@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#070b14">
+    <title>VPCMiner - Acesso</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background:
+                radial-gradient(circle at 15% 15%, rgba(37, 99, 235, .18), transparent 30%),
+                radial-gradient(circle at 85% 85%, rgba(16, 185, 129, .10), transparent 28%),
+                #070b14;
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, .78);
+            border: 1px solid rgba(148, 163, 184, .12);
+            box-shadow:
+                0 30px 80px rgba(0, 0, 0, .45),
+                inset 0 1px 0 rgba(255, 255, 255, .04);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+        }
+
+        .input-box {
+            background: rgba(3, 7, 18, .72);
+            border: 1px solid rgba(100, 116, 139, .24);
+            transition: .25s ease;
+        }
+
+        .input-box:focus {
+            border-color: rgba(59, 130, 246, .75);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, .08);
+            background: rgba(3, 7, 18, .9);
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            box-shadow: 0 12px 28px rgba(37, 99, 235, .22);
+            transition: .25s ease;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 34px rgba(37, 99, 235, .32);
+        }
+
+        .tab-active {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, .20);
+        }
+
+        .logo-ring {
+            box-shadow:
+                0 0 0 1px rgba(59, 130, 246, .18),
+                0 10px 35px rgba(37, 99, 235, .18);
+        }
+
+        html { min-height: 100%; }
+        body { min-height: 100dvh; }
+        #welcomeScreen, #accessScreen { min-width: 0; }
+        .welcome-card { overflow-wrap: anywhere; }
+        button { touch-action: manipulation; }
+        @media (max-width: 380px) {
+            main { max-width: 100%; }
+            .glass { padding: 1rem; }
+            .welcome-card { padding: 1rem; }
+        }
+
+        .fade-in {
+            animation: fadeIn .55s ease both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen text-slate-200 flex items-center justify-center px-4 py-6 sm:py-8 relative overflow-x-hidden">
+
+    <!-- Background -->
+    <div class="absolute -top-40 -left-40 w-[520px] h-[520px] rounded-full bg-blue-600/10 blur-[140px] pointer-events-none"></div>
+    <div class="absolute -bottom-48 -right-40 w-[560px] h-[560px] rounded-full bg-emerald-500/8 blur-[150px] pointer-events-none"></div>
+    <div class="absolute inset-0 opacity-[.025] pointer-events-none"
+         style="background-image: linear-gradient(rgba(255,255,255,.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px); background-size: 42px 42px;">
+    </div>
+
+    <main class="w-full max-w-lg relative z-10 fade-in my-auto">
+        <section class="glass rounded-[28px] p-5 sm:p-8">
+
+            <!-- Header -->
+            <div class="text-center mb-7">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-600/10 border border-blue-400/15 logo-ring mb-4">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                        <svg width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M12 3L19 6.5V11.5C19 16.2 16.1 19.7 12 21C7.9 19.7 5 16.2 5 11.5V6.5L12 3Z" stroke="white" stroke-width="1.8"/>
+                            <path d="M8.5 12H15.5M12 8.5V15.5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+                    VPC<span class="text-blue-500">Miner</span>
+                </h1>
+
+                <p class="mt-2 text-sm text-slate-400">
+                    Sua central de mineração e operações
+                </p>
+
+                <div class="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/8 border border-emerald-400/10 text-[11px] font-semibold text-emerald-300">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Plataforma operacional
+                </div>
+            </div>
+
+            <!-- Welcome -->
+            <div id="welcomeScreen" class="fade-in">
+                <div class="welcome-card rounded-2xl border border-blue-400/15 bg-gradient-to-br from-blue-500/10 via-slate-900/30 to-emerald-500/5 p-5 sm:p-6">
+                    <div class="flex items-start gap-3 mb-4">
+                        <div class="mt-0.5 flex-shrink-0 w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-400/10 flex items-center justify-center">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M12 8V12L14.5 14.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                <circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.8"/>
+                            </svg>
+                        </div>
+                        <div class="min-w-0">
+                            <h2 class="text-xl font-extrabold leading-snug text-white">Seja bem-vindo à VPCMiner</h2>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 text-sm leading-6 text-slate-300">
+                        <section>
+                            <h3 class="text-base font-extrabold text-white mb-2">💸 Comece a Lucrar com Apenas R$15</h3>
+                            <p>Você não precisa de muito dinheiro para começar. Com apenas R$15 a R$20 você já entra na VPCMiner e começa a ver seu dinheiro trabalhar por você.</p>
+                        </section>
+
+                        <p>A VPCMiner tem uma projeção de funcionamento de 2 a 3 anos e meio ou seja, tempo de sobra para você multiplicar seu investimento e colher os resultados.</p>
+
+                        <div class="rounded-xl bg-black/20 border border-slate-800/60 p-4 space-y-2">
+                            <p>✅ Investimento baixo</p>
+                            <p>✅ Projeção de longo prazo</p>
+                            <p>✅ Suporte completo para você</p>
+                        </div>
+
+                        <section class="rounded-xl border border-blue-400/10 bg-blue-500/5 p-4">
+                            <h3 class="font-extrabold text-white mb-2">🤔 Pergunta óbvia</h3>
+                            <p class="font-semibold text-slate-200 mb-2">Mas com só R$15 dá pra ganhar dinheiro mesmo?</p>
+                            <p>Sim! O segredo não é começar grande, é começar. Quem investe pouco hoje, com o tempo e o reinvestimento certo, pode transformar R$15 em muito mais. O importante é dar o primeiro passo.</p>
+                        </section>
+
+                        <p>E tem mais: ao fazer seu investimento, você recebe o link do grupo exclusivo no seu email onde um gerente acompanha seus saques e tira todas as suas dúvidas junto com outros investidores.</p>
+
+                        <p class="font-semibold text-white">Não deixe pra depois. Comece hoje com R$15 e construa seu futuro! 🚀</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mt-4">
+                    <div class="rounded-xl bg-black/20 border border-slate-800/60 p-3">
+                        <div class="text-xs font-bold text-white">Cadastro rápido</div>
+                        <div class="text-[10px] text-slate-500 mt-1">Crie sua conta em poucos passos.</div>
+                    </div>
+                    <div class="rounded-xl bg-black/20 border border-slate-800/60 p-3">
+                        <div class="text-xs font-bold text-white">Painel completo</div>
+                        <div class="text-[10px] text-slate-500 mt-1">Acompanhe sua operação.</div>
+                    </div>
+                    <div class="rounded-xl bg-black/20 border border-slate-800/60 p-3">
+                        <div class="text-xs font-bold text-white">Tudo em um só lugar</div>
+                        <div class="text-[10px] text-slate-500 mt-1">Mais praticidade no dia a dia.</div>
+                    </div>
+                </div>
+
+                <button onclick="showAccess('register')"
+                    class="primary-btn w-full mt-4 text-white font-extrabold py-4 rounded-xl text-sm">
+                    Começar agora
+                </button>
+
+                <button onclick="showAccess('login')"
+                    class="w-full mt-3 py-3.5 rounded-xl text-sm font-bold text-slate-300 border border-slate-700 hover:border-slate-600 hover:bg-white/[.03] transition">
+                    Já tenho uma conta
+                </button>
+
+                <p class="text-center text-[11px] leading-5 text-slate-500 mt-3">
+                    Ao continuar, você será direcionado para o acesso da plataforma.
+                </p>
+            </div>
+
+            <!-- Access -->
+            <div id="accessScreen" class="hidden">
+                <!-- Tabs -->
+                <div class="flex gap-1.5 mb-7 p-1.5 rounded-2xl bg-black/25 border border-slate-800/70">
+                    <button id="tabLogin" onclick="switchTab('login')"
+                        class="flex-1 py-3 rounded-xl text-sm font-bold transition tab-active text-white">
+                        Entrar
+                    </button>
+                    <button id="tabRegister" onclick="switchTab('register')"
+                        class="flex-1 py-3 rounded-xl text-sm font-bold transition text-slate-400 hover:text-white">
+                        Criar conta
+                    </button>
+                </div>
+
+                <button onclick="showWelcome()"
+                    class="mb-5 text-xs font-semibold text-slate-500 hover:text-slate-300 transition">
+                    ← Voltar para apresentação
+                </button>
+
+                <!-- Login -->
+            <div id="formLogin" class="space-y-5">
+                <div>
+                    <div class="mb-2.5">
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">E-mail</label>
+                    </div>
+                    <input type="email" id="loginEmail" placeholder="seu@email.com" autocomplete="email"
+                        class="input-box w-full rounded-xl px-4 py-3.5 text-sm text-white placeholder:text-slate-600 font-medium outline-none">
+                </div>
+
+                <div>
+                    <div class="mb-2.5">
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Palavra-passe</label>
+                    </div>
+                    <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password"
+                        class="input-box w-full rounded-xl px-4 py-3.5 text-sm text-white placeholder:text-slate-600 font-medium outline-none">
+                </div>
+
+                <button onclick="auth('login')"
+                    class="primary-btn w-full text-white font-extrabold py-3.5 rounded-xl text-sm mt-2">
+                    Acessar minha conta
+                </button>
+
+                <p class="text-center text-[11px] text-slate-500">
+                    Entre para acessar seu painel operacional
+                </p>
+            </div>
+
+            <!-- Registro -->
+            <div id="formRegister" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2.5">E-mail</label>
+                    <input type="email" id="regEmail" placeholder="seu@email.com" autocomplete="email"
+                        class="input-box w-full rounded-xl px-4 py-3.5 text-sm text-white placeholder:text-slate-600 font-medium outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2.5">Palavra-passe</label>
+                    <input type="password" id="regPassword" placeholder="••••••••" autocomplete="new-password"
+                        class="input-box w-full rounded-xl px-4 py-3.5 text-sm text-white placeholder:text-slate-600 font-medium outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2.5">CPF</label>
+                    <input type="text" id="regCpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric"
+                        class="input-box w-full rounded-xl px-4 py-3.5 text-sm text-white placeholder:text-slate-600 font-medium outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2.5">Chave PIX para saques</label>
+                    <input type="text" id="regPixKey" placeholder="CPF, e-mail, telefone ou chave aleatória"
+                        class="input-box w-full rounded-xl px-4 py-3.5 text-sm text-white placeholder:text-slate-600 font-medium outline-none">
+                    <p class="mt-2 text-[11px] leading-relaxed text-slate-500">
+                        Seus saques serão enviados para esta chave PIX. Certifique-se de que ela está correta.
+                    </p>
+                </div>
+
+                <button onclick="auth('register')"
+                    class="primary-btn w-full text-white font-extrabold py-3.5 rounded-xl text-sm mt-2">
+                    Criar minha conta
+                </button>
+
+                <p class="text-center text-[11px] text-slate-500">
+                    Crie sua conta e comece a utilizar a plataforma
+                </p>
+            </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="mt-7 pt-5 border-t border-slate-800/70 text-center">
+                <p class="text-[10px] uppercase tracking-[.18em] text-slate-600 font-semibold">
+                    VPCMiner • Acesso seguro
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const API = 'https://blackend-6b0w.onrender.com/api';
+        const ref = new URLSearchParams(window.location.search).get('ref');
+
+        localStorage.clear();
+
+        function showWelcome() {
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+            document.getElementById('accessScreen').classList.add('hidden');
+        }
+
+        function showAccess(tab) {
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('accessScreen').classList.remove('hidden');
+            switchTab(tab);
+        }
+
+        function switchTab(tab) {
+            const isLogin = tab === 'login';
+            document.getElementById('formLogin').classList.toggle('hidden', !isLogin);
+            document.getElementById('formRegister').classList.toggle('hidden', isLogin);
+            document.getElementById('tabLogin').className = `flex-1 py-2 rounded-lg text-xs font-bold transition ${isLogin ? 'bg-blue-600 text-white' : 'text-slate-400'}`;
+            document.getElementById('tabRegister').className = `flex-1 py-2 rounded-lg text-xs font-bold transition ${!isLogin ? 'bg-blue-600 text-white' : 'text-slate-400'}`;
+        }
+
+        // Máscara CPF
+        document.getElementById('regCpf').addEventListener('input', function(e) {
+            let v = e.target.value.replace(/\D/g, '');
+            if (v.length <= 11) {
+                v = v.replace(/(\d{3})(\d)/, '$1.$2');
+                v = v.replace(/(\d{3})(\d)/, '$1.$2');
+                v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            }
+            e.target.value = v;
+        });
+
+        async function auth(type) {
+            if (type === 'login') {
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                if (!email || !password) return alert('Preencha todos os campos.');
+
+                try {
+                    const res = await fetch(`${API}/auth/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+                    const data = await res.json();
+                    if (data.error) return alert(data.error);
+                    if (data.token) {
+                        localStorage.setItem('token', data.token);
+                        localStorage.setItem('userId', data.userId);
+                        localStorage.setItem('role', data.role || 'client');
+                        location.href = data.role === 'admin' ? 'admin.html' : 'index.html';
+                    }
+                } catch (err) {
+                    alert('Erro ao processar o login.');
+                }
+            } else {
+                const email = document.getElementById('regEmail').value;
+                const password = document.getElementById('regPassword').value;
+                const cpf = document.getElementById('regCpf').value;
+                const pix_key = document.getElementById('regPixKey').value;
+
+                if (!email || !password || !cpf || !pix_key) return alert('Preencha todos os campos.');
+                if (cpf.replace(/\D/g, '').length !== 11) return alert('CPF inválido. Digite os 11 dígitos.');
+
+                try {
+                    const res = await fetch(`${API}/auth/register`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password, cpf, pix_key, ref })
+                    });
+                    const data = await res.json();
+                    if (data.error) return alert(data.error);
+                    if (data.token) {
+                        localStorage.setItem('token', data.token);
+                        localStorage.setItem('userId', data.userId);
+                        localStorage.setItem('role', data.role || 'client');
+                        location.href = 'index.html';
+                    }
+                } catch (err) {
+                    alert('Erro ao criar conta.');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
