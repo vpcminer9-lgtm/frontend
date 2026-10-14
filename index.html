@@ -247,6 +247,10 @@
         <span>Check-in</span>
     </div>
     
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 <div class="quick-icon" onclick="mostrarAvisoGrupo()">
     <i class="fa-brands fa-whatsapp"></i>
     <span>WhatsApp</span>
@@ -259,7 +263,13 @@
 
 <script>
     function mostrarAvisoGrupo() {
-    alert("O grupo é liberado assim que o seu investimento for concluído com sucesso. Nele, você se junta a outros investidores e gerentes. A ativação é automática e você também receberá o link no seu e-mail.");
+    Swal.fire({
+        icon: 'info',
+        title: 'Acesso ao Grupo Exclusivo',
+        text: 'O grupo é liberado assim que o seu investimento for concluído com sucesso. Nele, você se junta a outros investidores e gerentes. A ativação é automática e você também receberá o link no seu e-mail.',
+        confirmButtonText: 'Entendi',
+        confirmButtonColor: '#25D366'
+    });
 }
 </script>
 </div>
