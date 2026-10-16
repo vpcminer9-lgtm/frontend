@@ -216,6 +216,18 @@
             margin-bottom: 8px;
             font-size: 12px;
         }
+
+.protected-image {
+    -webkit-user-drag: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    pointer-events: none;
+}
+
+.product-item img {
+    -webkit-user-drag: none;
+}
     </style>
 </head>
 <body>
@@ -535,10 +547,21 @@
                 if (Array.isArray(products) && products.length > 0) {
                     products.forEach(p => {
                         const totalReturn = (Number(p.price) || 0) * (Number(p.daily_yield_percent) || 0) / 100 * (Number(p.duration_days) || 1);
-                        const imgHtml = p.image_url
-                            ? `<img src="${p.image_url}" class="product-img" alt="${p.title || 'Máquina'}">`
-                            : `<div class="product-img flex items-center justify-center"><i class="fa-solid fa-microchip text-slate-700 text-4xl"></i></div>`;
-
+                        
+const imgHtml = p.image_url
+    ? `<img
+        src="${p.image_url}"
+        class="product-img protected-image"
+        alt="${p.title || 'Máquina'}"
+        draggable="false"
+        oncontextmenu="return false"
+        ondragstart="return false"
+        onmousedown="if(event.button === 2) return false;"
+        style="pointer-events:none; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;"
+      >`
+    : `<div class="product-img flex items-center justify-center">
+        <i class="fa-solid fa-microchip text-slate-700 text-4xl"></i>
+      </div>`;
                         container.innerHTML += `
                             <div class="product-item">
                                 ${imgHtml}
