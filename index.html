@@ -362,7 +362,7 @@
         </div>
         <div class="panel-body">
             <label class="text-[10px] text-slate-500 uppercase font-bold">Valor da recarga</label>
-            <input type="number" id="depAmount" placeholder="Mínimo R$ 5,00" class="input-field mt-1">
+            <input type="number" id="depAmount" placeholder="Mínimo R$ 15,00" class="input-field mt-1">
             <button onclick="deposit()" class="primary-button mt-3">
                 <i class="fa-brands fa-pix mr-1"></i> Gerar Código PIX
             </button>
@@ -770,7 +770,7 @@ const imgHtml = p.image_url
     async function deposit() {
         const amount = document.getElementById('depAmount').value;
         if (!amount || Number(amount) < 5) {
-            alert('Digite um valor válido. O mínimo é R$ 5,00.');
+            alert('Digite um valor válido. O mínimo é R$ 15,00.');
             return;
         }
         try {
